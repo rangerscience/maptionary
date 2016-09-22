@@ -326,7 +326,8 @@ object:
             string data = @"
 array:
 - 0
-- 1
+- 
+  1
 - 2
 key: value";
 
@@ -473,13 +474,17 @@ objects:
     array:
     - 0
     - 1
-- object:
+  key: value
+- 
+  object:
     array:
     - 0
     - 1
     nestedObject:
       key: value
-- object:
+  key: value
+- key: value
+  object:
     array:
       - 0
       - 1
@@ -495,14 +500,17 @@ key: value";
             Assert.IsTrue(n["objects"][0]["object"]["nestedObject"]["key"] == "value");
             Assert.IsTrue(n["objects"][0]["object"]["array"][0] == 0);
             Assert.IsTrue(n["objects"][0]["object"]["array"][1] == 1);
+            Assert.IsTrue(n["objects"][0]["key"] == "value");
 
             Assert.IsTrue(n["objects"][1]["object"]["nestedObject"]["key"] == "value");
             Assert.IsTrue(n["objects"][1]["object"]["array"][0] == 0);
             Assert.IsTrue(n["objects"][1]["object"]["array"][1] == 1);
+            Assert.IsTrue(n["objects"][1]["key"] == "value");
 
             Assert.IsTrue(n["objects"][2]["object"]["nestedObject"]["key"] == "value");
             Assert.IsTrue(n["objects"][2]["object"]["array"][0] == 0);
             Assert.IsTrue(n["objects"][2]["object"]["array"][1] == 1);
+            Assert.IsTrue(n["objects"][2]["key"] == "value");
 
             data = @"
 objects:
