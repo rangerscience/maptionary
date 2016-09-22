@@ -15,6 +15,7 @@ namespace Maptionary {
         const string colon = ":";
         const string dash = "-";
         const string newline = "\n";
+        const string whitespace = " ";
 
         static void ReadNextYAMLToken(ref string data, ref int i, out string token) {
             char c = data[i];
@@ -66,7 +67,10 @@ namespace Maptionary {
             string token = null;
             string priorToken = null;
             Node n = new Node();
-            Node root = n;
+
+            int indentLevel = 0;
+            Node[] levels = new Node[100]; // Handle 50 levels deep inherently.
+            levels[0] = n; //Root node is at 0
 
             while (i < data.Length) {
 
@@ -76,6 +80,7 @@ namespace Maptionary {
                 // Colon, dash, newline, whitespace, string - these are the possible tokens
                 // (Remember that numbers are treated as strings)
 
+                //TODO: ===?
                 if (token == colon) {
                     //TODO: Error checking! If there's no priorToken, our presumptive logic doesn't work.
                     // Presuming correct YAML, the priorToken is, logically, a key
@@ -83,44 +88,60 @@ namespace Maptionary {
                     n[priorToken].parent = n;
                     n = n[priorToken];
 
-                    priorToken = token;
+                    priorToken = colon;
                 } else if (token == dash) {
 
                 } else if (token == newline) {
                     if (priorToken == dash) {
                         // Ignore this newline, we're in an array object, and it's allowed to start on the next line
-                    } else { 
+                    //} else if (priorToken == colon) {
+                        // Beginning a new object, ignore this newline
+                    } else {
                         // Whatever the result of this is, it'll be handled by the next token.
-                        priorToken = token;
+                        priorToken = newline;
                     }
-                } else if (token.Trim().Length == 0) { // Although there are better methods, we need to be compatible with the Unity version of C#
-                    if(priorToken == colon || priorToken == dash) {
+                    
+                } else if (token[0] == ' ' && token.Trim().Length == 0) { // Although there are better methods, we need to be compatible with the Unity version of C#
+
+                    if (priorToken == colon || priorToken == dash) {
                         // Ignore this whitespace, we're between a colon or dash and the start of the object
+
+                    } else if (priorToken == newline) {
+                        int _indentLevel = token.Length;
+                        if(_indentLevel < indentLevel) {
+                            // End of an object
+                        } else if (_indentLevel > indentLevel) {
+                            // Entering an object
+                            levels[_indentLevel] = n;
+                            indentLevel = _indentLevel;
+                            priorToken = whitespace;
+                        } else {
+                            // Continuing an object
+                            priorToken = whitespace;
+                            n = levels[_indentLevel];
+                        }
                     }
                 } else {
                     // Handle an edge case - although we might want to do this in the read token, then we don't know the correct token size :P
-                    if (token[0] == '"' || token[0] == '\'') { 
+                    if (token[0] == '"' || token[0] == '\'') {
                         token = token.Substring(1, token.Length - 2);
                     }
 
                     if (priorToken == colon) {
                         // Logically, this is leaf node, and the current token is the value
                         n.leaf = token;
+                    } else if (priorToken == whitespace) {
+                        //Nothing special
                     } else if (priorToken == newline) {
                         // We're on a new key for the root object (since there's no whitespace after the newline, we know we're at the root level)
-                        // Since our current node is, logically, a value node, go back up one on the tree.
-                        // But, since our data string can start with newlines (and have double newlines), don't go above root.
-                        if(n != root) { 
-                            n = n.parent;
-                        }
+                        n = levels[0];
                     }
-
-
+                    
                     priorToken = token;
                 }
             }
 
-            return root;
+            return levels[0];
         }
     }
 }
