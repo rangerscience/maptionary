@@ -90,7 +90,20 @@ namespace Maptionary {
 
                     priorToken = colon;
                 } else if (token == dash) {
+                    //TODO: Nodes should know they're an array
+                    // A dash is basically "fill in this key with an array index, then a colon"
 
+                    string key = n.Keys.Count().ToString(); // 0 keys gets key '0', 1 key gets key '1' (so, say, '0' and '1')
+                    n[key] = new Node();
+                    n[key].parent = n;
+                    n = n[key];
+
+                    //Arrays are a little weird; we need to check some whitespacing edge cases.
+                    if (priorToken == newline) {
+                        levels[2] = n;
+                    }
+
+                    priorToken = dash;
                 } else if (token == newline) {
                     if (priorToken == dash) {
                         // Ignore this newline, we're in an array object, and it's allowed to start on the next line
@@ -130,9 +143,13 @@ namespace Maptionary {
                         token = token.Substring(1, token.Length - 2);
                     }
 
-                    if (priorToken == colon) {
+                    if (priorToken == colon || priorToken == dash) {
                         // Logically, this is leaf node, and the current token is the value
                         n.leaf = token;
+                        if(n.parent != null) {
+                            n = n.parent;
+                            //TODO: Indent level?
+                        }
                     } else if (priorToken == whitespace) {
                         //Nothing special
                     } else if (priorToken == newline) {
