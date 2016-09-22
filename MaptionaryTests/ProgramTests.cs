@@ -362,25 +362,29 @@ array:
         public void BasicIndentedArray() {
             string data = @"
 array:
-  - 0
-  - 1
-  - 2
+  - a
+  - b
+  - c
 key: value";
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n[0] == 0);
-            Assert.IsTrue(n[1] == 1);
-            Assert.IsTrue(n[2] == 2);
+            Assert.IsTrue(n["array"][0] == "a");
+            Assert.IsTrue(n["array"][1] == "b");
+            Assert.IsTrue(n["array"][2] == "c");
             Assert.IsTrue(n["key"] == "value");
+        }
 
-            data = @"
+        [TestMethod()]
+        public void BasicIndentedArray_NewlineTermination() {
+
+            string data = @"
 array:
   - 0
   - 1
   - 2";
 
-            n = Parser.Parse(data);
+            Node n = Parser.Parse(data);
 
             Assert.IsTrue(n[0] == 0);
             Assert.IsTrue(n[1] == 1);
