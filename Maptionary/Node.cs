@@ -9,6 +9,7 @@ namespace Maptionary
     public class Node : Dictionary<string, Node>
     {
         public string leaf = null;
+        public Node parent = null;
 
         public Node this[string key] {
             get {

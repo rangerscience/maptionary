@@ -139,6 +139,7 @@ namespace Maptionary.Tests {
         }
     }
     
+    //TODO: Test safe parsing of malformed YAML
     [TestClass()]
     public class YAMLParseTests {
         [TestMethod()]
