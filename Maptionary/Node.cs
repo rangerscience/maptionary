@@ -33,6 +33,31 @@ namespace Maptionary
                 this.Add(key, value);
             }
         }
+        //TODO: Copypasta. Is there a better way?
+        public Node this[int key] {
+            get { 
+                return this[key.ToString()];
+            }
+            set {
+                this[key.ToString()] = value;
+            }
+        }
+        public Node this[float key] {
+            get {
+                return this[key.ToString()];
+            }
+            set {
+                this[key.ToString()] = value;
+            }
+        }
+        public Node this[double key] {
+            get {
+                return this[key.ToString()];
+            }
+            set {
+                this[key.ToString()] = value;
+            }
+        }
 
         public static implicit operator bool(Node n)
         {
@@ -60,6 +85,52 @@ namespace Maptionary
                 return n.leaf;
             }
             return null;
+        }
+
+        //Convert the number to a string, then a node
+        public static implicit operator Node(int n) {
+            return (Node) n.ToString();
+        }
+        public static implicit operator Node(float n) {
+            return (Node)n.ToString();
+        }
+        public static implicit operator Node(double n) {
+            return (Node)n.ToString();
+        }
+
+        //Convert the node to a number
+        //TODO: Better default value?
+        //TODO: Copy pasta?
+        //TODO: Keep numbers as numbers, internally? (maybe using "val" instead of "string"?)
+        public static implicit operator int(Node n) {
+            //Node must be a leaf node
+            int num;
+            if (n.leaf != null) {
+                if (int.TryParse(n.leaf, out num)) {
+                    return num;
+                }
+            }
+            return 0;
+        }
+        public static implicit operator double(Node n) {
+            //Node must be a leaf node
+            double num;
+            if (n.leaf != null) {
+                if (double.TryParse(n.leaf, out num)) {
+                    return num;
+                }
+            }
+            return 0;
+        }
+        public static implicit operator float(Node n) {
+            //Node must be a leaf node
+            float num;
+            if (n.leaf != null) {
+                if (float.TryParse(n.leaf, out num)) {
+                    return num;
+                }
+            }
+            return 0;
         }
     }
 }
