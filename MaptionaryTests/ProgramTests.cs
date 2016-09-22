@@ -244,23 +244,23 @@ key: value
         public void NestedObjects() {
             string data = @"
 object1:
-  key1: value1
+  key1: value11
   innerObject1:
-    key1: value1
-    key2: value2
-    key3: value3
+    key1: value111
+    key2: value112
+    key3: value113
   innerObject2:
-    key1: value1
-    key2: value2
-    key3: value3
-  key2: value2
-  key3: value3
+    key1: value121
+    key2: value122
+    key3: value123
+  key2: value12
+  key3: value13
   innerObject3:
-    key1: value1
-    key2: value2
-    key3: value3
+    key1: value131
+    key2: value132
+    key3: value133
 object2:
-  key1: value1
+  key1: value21
   level2Object1:
     key: value
     level3Object1:
@@ -273,51 +273,53 @@ object2:
       key: value
   level2Object2:
     key: value
-  key2: value2
-  key3: value3
+  key2: value22
+  key3: value23
 key: value
 ";
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n["object1"]["key1"] == "value1");
-            Assert.IsTrue(n["object1"]["key2"] == "value2");
-            Assert.IsTrue(n["object1"]["key3"] == "value3");
+            Assert.IsTrue(n["object1"]["key1"] == "value11");
+            Assert.IsTrue(n["object1"]["key2"] == "value12");
+            Assert.IsTrue(n["object1"]["key3"] == "value13");
 
-            Assert.IsTrue(n["object2"]["key1"] == "value1");
-            Assert.IsTrue(n["object2"]["key2"] == "value2");
-            Assert.IsTrue(n["object2"]["key3"] == "value3");
+            Assert.IsTrue(n["object2"]["key1"] == "value21");
+            Assert.IsTrue(n["object2"]["key2"] == "value22");
+            Assert.IsTrue(n["object2"]["key3"] == "value23");
 
             Assert.IsTrue(n["key"] == "value");
 
-            Assert.IsTrue(n["object1"]["innerObject1"]["key1"] == "value1");
-            Assert.IsTrue(n["object1"]["innerObject1"]["key2"] == "value2");
-            Assert.IsTrue(n["object1"]["innerObject1"]["key3"] == "value3");
+            Assert.IsTrue(n["object1"]["innerObject1"]["key1"] == "value111");
+            Assert.IsTrue(n["object1"]["innerObject1"]["key2"] == "value112");
+            Assert.IsTrue(n["object1"]["innerObject1"]["key3"] == "value113");
 
-            Assert.IsTrue(n["object1"]["innerObject2"]["key1"] == "value1");
-            Assert.IsTrue(n["object1"]["innerObject2"]["key2"] == "value2");
-            Assert.IsTrue(n["object1"]["innerObject2"]["key3"] == "value3");
+            Assert.IsTrue(n["object1"]["innerObject2"]["key1"] == "value121");
+            Assert.IsTrue(n["object1"]["innerObject2"]["key2"] == "value122");
+            Assert.IsTrue(n["object1"]["innerObject2"]["key3"] == "value123");
 
-            Assert.IsTrue(n["object1"]["innerObject3"]["key1"] == "value1");
-            Assert.IsTrue(n["object1"]["innerObject3"]["key2"] == "value2");
-            Assert.IsTrue(n["object1"]["innerObject3"]["key3"] == "value3");
+            Assert.IsTrue(n["object1"]["innerObject3"]["key1"] == "value131");
+            Assert.IsTrue(n["object1"]["innerObject3"]["key2"] == "value132");
+            Assert.IsTrue(n["object1"]["innerObject3"]["key3"] == "value133");
 
-            Assert.IsTrue(n["object1"]["level2Object1"]["key"] == "value");
-            Assert.IsTrue(n["object1"]["level2Object2"]["key"] == "value");
-            Assert.IsTrue(n["object1"]["level2Object1"]["level3Object1"]["key"] == "value");
-            Assert.IsTrue(n["object1"]["level2Object1"]["level3Object2"]["key"] == "value");
-            Assert.IsTrue(n["object1"]["level2Object1"]["level3Object1"]["level4Object1"]["key"] == "value");
-            Assert.IsTrue(n["object1"]["level2Object1"]["level3Object1"]["level4Object2"]["key"] == "value");
+            Assert.IsTrue(n["object2"]["level2Object1"]["key"] == "value");
+            Assert.IsTrue(n["object2"]["level2Object2"]["key"] == "value");
+            Assert.IsTrue(n["object2"]["level2Object1"]["level3Object1"]["key"] == "value");
+            Assert.IsTrue(n["object2"]["level2Object1"]["level3Object2"]["key"] == "value");
+            Assert.IsTrue(n["object2"]["level2Object1"]["level3Object1"]["level4Object1"]["key"] == "value");
+            Assert.IsTrue(n["object2"]["level2Object1"]["level3Object1"]["level4Object2"]["key"] == "value");
+        }
 
-
-            data = @"
+        [TestMethod()]
+        public void NestedObjects_NestedNewlineTermination() {
+            string data = @"
 object:
   level2Object:
     level3Object:
       level4Object:
         key: value
 ";
-            n = Parser.Parse(data);
+            Node n = Parser.Parse(data);
 
             Assert.IsTrue(n["object1"]["level2Object"]["level3Object"]["level4Object"]["key"] == "value");
         }

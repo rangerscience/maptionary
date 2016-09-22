@@ -110,6 +110,9 @@ namespace Maptionary {
                         int _indentLevel = token.Length;
                         if(_indentLevel < indentLevel) {
                             // End of an object
+                            priorToken = whitespace;
+                            n = levels[_indentLevel];
+                            indentLevel = _indentLevel;
                         } else if (_indentLevel > indentLevel) {
                             // Entering an object
                             levels[_indentLevel] = n;
