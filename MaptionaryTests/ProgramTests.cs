@@ -391,6 +391,21 @@ array:
             Assert.IsTrue(n["array"][2] == 2);
         }
 
+        [TestMethod()]
+        public void RootArray() {
+
+            string data = @"
+- a
+- b
+- c";
+
+            Node n = Parser.Parse(data);
+
+            Assert.IsTrue(n[0] == "a");
+            Assert.IsTrue(n[1] == "b");
+            Assert.IsTrue(n[2] == "c");
+        }
+
 
         [TestMethod()]
         public void NestedArray() {
