@@ -135,6 +135,7 @@ namespace Maptionary {
                     } else if (priorToken == newline) {
                         // We're on a new key for the root object (since there's no whitespace after the newline, we know we're at the root level)
                         n = levels[0];
+                        indentLevel = 0;
                     }
                     
                     priorToken = token;

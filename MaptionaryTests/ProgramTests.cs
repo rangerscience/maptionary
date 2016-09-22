@@ -223,9 +223,9 @@ object1:
   key2: value2
   key3: value3
 object2:
-  key1: value1
-  key2: value2
-  key3: value3
+  key1: value3
+  key2: value4
+  key3: value5
 key: value
 ";
 
@@ -234,9 +234,9 @@ key: value
             Assert.IsTrue(n["object1"]["key1"] == "value1");
             Assert.IsTrue(n["object1"]["key2"] == "value2");
             Assert.IsTrue(n["object1"]["key3"] == "value3");
-            Assert.IsTrue(n["object2"]["key1"] == "value1");
-            Assert.IsTrue(n["object2"]["key2"] == "value2");
-            Assert.IsTrue(n["object2"]["key3"] == "value3");
+            Assert.IsTrue(n["object2"]["key1"] == "value3");
+            Assert.IsTrue(n["object2"]["key2"] == "value4");
+            Assert.IsTrue(n["object2"]["key3"] == "value5");
             Assert.IsTrue(n["key"] == "value");
         }
 
