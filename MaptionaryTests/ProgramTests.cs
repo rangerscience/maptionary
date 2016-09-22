@@ -140,6 +140,7 @@ namespace Maptionary.Tests {
     }
     
     //TODO: Test safe parsing of malformed YAML
+    //TODO: Tests againts lots of extra whitespace - trailing, newlines, empty lines, etc (remember to handle \r and \n, and \r\n)
     [TestClass()]
     public class YAMLParseTests {
         [TestMethod()]
@@ -149,6 +150,21 @@ namespace Maptionary.Tests {
             Node n = Parser.Parse(data);
 
             Assert.IsTrue(n["key"] == "value");
+        }
+
+        [TestMethod()]
+        public void Flat() {
+            string data = @"    
+key1: value1
+key2: value2
+key3: value3
+";
+
+            Node n = Parser.Parse(data);
+
+            Assert.IsTrue(n["key1"] == "value1", "Flat YAML key doesn't have correct value: '" + n["key1"] + "'");
+            Assert.IsTrue(n["key2"] == "value2");
+            Assert.IsTrue(n["key3"] == "value3");
         }
 
         [TestMethod()]
@@ -163,22 +179,6 @@ key: value2
             //TODO: Desired behavior?
             Assert.IsTrue(n["key"] == "value2", "Repeated key doesn't overwrite prior key");
         }
-
-        [TestMethod()]
-        public void Flat() {
-            string data = @"
-key1: value1
-key2: value2
-key3: value3
-";
-
-            Node n = Parser.Parse(data);
-
-            Assert.IsTrue(n["key1"] == "value1");
-            Assert.IsTrue(n["key2"] == "value2");
-            Assert.IsTrue(n["key3"] == "value3");
-        }
-
         [TestMethod()]
         public void Quotations() {
             string data = @"

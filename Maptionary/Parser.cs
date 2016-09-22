@@ -26,6 +26,7 @@ namespace Maptionary {
                 case '-':
                     token = dash;
                     break;
+                case '\r':
                 case '\n':
                     token = newline;
                     break;
@@ -46,7 +47,10 @@ namespace Maptionary {
                     break;
                 default:
                     // Only newlines and colons break the symbol - and the end of the data string!
-                    while (_i < data.Length && data[_i] != '\n' && data[_i] != ':') {
+                    while (_i < data.Length && 
+                        data[_i] != '\n' && 
+                        data[_i] != '\r' && 
+                        data[_i] != ':') {
                         _i++;
                     }
                     token = data.Substring(i, _i - i);
@@ -70,7 +74,7 @@ namespace Maptionary {
                 // Colon, dash, newline, whitespace, string - these are the possible tokens
                 // (Remember that numbers are treated as strings)
 
-                if (token == ":") {
+                if (token == colon) {
                     //TODO: Error checking! If there's no priorToken, our presumptive logic doesn't work.
                     // Presuming correct YAML, the priorToken is, logically, a key
                     n[priorToken] = new Node();
@@ -78,19 +82,32 @@ namespace Maptionary {
                     n = n[priorToken];
 
                     priorToken = token;
-                } else if (token == "-") {
+                } else if (token == dash) {
 
-                } else if (token == "\n") {
-
+                } else if (token == newline) {
+                    if (priorToken == dash) {
+                        // Ignore this newline, we're in an array object, and it's allowed to start on the next line
+                    } else { 
+                        // Whatever the result of this is, it'll be handled by the next token.
+                        priorToken = token;
+                    }
                 } else if (token.Trim().Length == 0) { // Although there are better methods, we need to be compatible with the Unity version of C#
-                    if(priorToken == ":") {
-                        // Ignore this whitespace
+                    if(priorToken == colon || priorToken == dash) {
+                        // Ignore this whitespace, we're between a colon or dash and the start of the object
                     }
                 } else {
-                    if(priorToken == ":") {
+                    if(priorToken == colon) {
                         // Logically, this is leaf node, and the current token is the value
                         n.leaf = token;
+                    } else if (priorToken == newline) {
+                        // We're on a new key for the root object (since there's no whitespace after the newline, we know we're at the root level)
+                        // Since our current node is, logically, a value node, go back up one on the tree.
+                        // But, since our data string can start with newlines (and have double newlines), don't go above root.
+                        if(n != root) { 
+                            n = n.parent;
+                        }
                     }
+
 
                     priorToken = token;
                 }
