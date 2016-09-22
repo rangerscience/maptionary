@@ -34,9 +34,11 @@ namespace Maptionary {
                 case '"':
                     //This token will continue until the next quotation mark, no matter what - excepting end of data string!
                     char sym = data[i]; // Same behavior for each
+                    _i++; //Advance past this current quotation mark
                     while (_i < data.Length && data[_i] != sym) {
                         _i++;
                     }
+                    _i++; //Advance past the final quotation mark
                     token = data.Substring(i, _i - i);
                     break;
                 case ' ':
@@ -96,7 +98,12 @@ namespace Maptionary {
                         // Ignore this whitespace, we're between a colon or dash and the start of the object
                     }
                 } else {
-                    if(priorToken == colon) {
+                    // Handle an edge case - although we might want to do this in the read token, then we don't know the correct token size :P
+                    if (token[0] == '"' || token[0] == '\'') { 
+                        token = token.Substring(1, token.Length - 2);
+                    }
+
+                    if (priorToken == colon) {
                         // Logically, this is leaf node, and the current token is the value
                         n.leaf = token;
                     } else if (priorToken == newline) {

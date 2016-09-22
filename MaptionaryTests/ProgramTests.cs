@@ -191,7 +191,8 @@ key: ' edging whitespace '
             Node n = Parser.Parse(data);
 
             Assert.IsTrue(n["single"] = "double");
-            Assert.IsTrue(n["\"doubles in single\""] == "'singles in doubles'");
+            Assert.IsTrue(n.ContainsKey("\"doubles in single\""), "Node doesn't contain \"doubles in singles\" key");
+            Assert.IsTrue(n["\"doubles in single\""] == "'singles in doubles'", "Doubles in singles key has wrong value: " + n["\"doubles in single\""]);
             Assert.IsTrue(n["use:colon"] = "use\nnewline");
             Assert.IsTrue(n["key"] = " edging whitespace ");
         }
