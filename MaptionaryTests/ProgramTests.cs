@@ -386,9 +386,9 @@ array:
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n[0] == 0);
-            Assert.IsTrue(n[1] == 1);
-            Assert.IsTrue(n[2] == 2);
+            Assert.IsTrue(n["array"][0] == 0);
+            Assert.IsTrue(n["array"][1] == 1);
+            Assert.IsTrue(n["array"][2] == 2);
         }
 
 
