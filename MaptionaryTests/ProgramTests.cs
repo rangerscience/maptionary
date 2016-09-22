@@ -353,9 +353,9 @@ array:
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n[0] == "a");
-            Assert.IsTrue(n[1] == "b");
-            Assert.IsTrue(n[2] == "c");
+            Assert.IsTrue(n["array"][0] == "a");
+            Assert.IsTrue(n["array"][1] == "b");
+            Assert.IsTrue(n["array"][2] == "c");
         }
 
         [TestMethod()]
