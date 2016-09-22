@@ -321,7 +321,8 @@ object:
 ";
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n["object1"]["level2Object"]["level3Object"]["level4Object"]["key"] == "value");
+            Assert.IsTrue(n["object"]["level2Object"]["level3Object"]["level4Object"]["key"] == "value",
+                "Deeply nested key doesn't have correct value: '" + n["object"]["level2Object"]["level3Object"]["level4Object"]["key"] + "'");
         }
 
         [TestMethod()]
