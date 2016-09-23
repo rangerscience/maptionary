@@ -10,7 +10,8 @@ namespace Maptionary
     {
         public string leaf = null;
         public Node parent = null;
-        public bool isArray = false; //TODO: Access controls?
+        public bool isArray = false; //TODO: Access controls? 
+        //TODO: Also, features for using this, although right now it's just used for JSON parsing
 
         public Node this[string key] {
             get {

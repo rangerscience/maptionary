@@ -310,11 +310,30 @@ namespace Maptionary {
                 ReadNextJSONToken(ref data, ref i, out token);
                 i += token.Length; // Advance our counter past the token
 
-                if (token == startCurly) {
+                if (token == startCurly || token == startBracket) {
                     // Check to see if we're the first node
                     if (root == null) {
                         root = new Node();
                         n = root;
+                    }
+
+                    //Check if this is actually the start of an object (or array) as an element of an array.
+                    if (n.isArray) {
+                        Node _n = new Node();
+                        _n.parent = n;
+                        _n.leaf = token;
+                        string key = n.Count().ToString();
+                        n[key] = _n;
+
+                        //...and recurse into the new node
+                        n = _n;
+                    }
+
+                    //Check if this is the start of an array node
+                    // (note that this is not an 'else' with the above, in order to handle arrays of arrays)
+                    if (token == startBracket) {
+                        //Note that we've entered an array node
+                        n.isArray = true;
                     }
 
                     //Otherwise, there's really nothing special to do, just note that the next symbol isn't a leaf node value
@@ -325,17 +344,6 @@ namespace Maptionary {
                     if (n.parent != null) {
                         n = n.parent;
                     }
-                } else if (token == startBracket) {
-                    if (root == null) {
-                        root = new Node();
-                        n = root;
-                    }
-
-                    //Otherwise, there's really nothing special to do, just note that the next symbol isn't a leaf node value
-                    priorToken = token;
-
-                    //...and that this node is an array node
-                    n.isArray = true;
                 } else if (token == colon) {
                     n[priorToken] = new Node();
                     n[priorToken].parent = n;

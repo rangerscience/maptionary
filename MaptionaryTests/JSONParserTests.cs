@@ -345,7 +345,7 @@ namespace Maptionary.Tests {
     'cb',
     'cc'
   ],
-- c'
+  'c'
 ],
 'key': 'value'
 }";
