@@ -68,8 +68,8 @@ namespace Maptionary.Tests {
             string data = @"
 {
   'key1': 1,
-  'key2': 1.23',
-  'key3': .6'
+  'key2': 1.23,
+  'key3': .6
 }";
 
             Node n = Parser.Parse(data);
