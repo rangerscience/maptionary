@@ -310,22 +310,31 @@ namespace Maptionary {
                 ReadNextJSONToken(ref data, ref i, out token);
                 i += token.Length; // Advance our counter past the token
 
-                if(token == startCurly) {
+                if (token == startCurly) {
                     // Check to see if we're the first node
-                    if(root == null) {
+                    if (root == null) {
                         root = new Node();
                         n = root;
                     }
 
                     //Otherwise, there's really nothing special to do, just note that the next symbol isn't a leaf node value
                     priorToken = token;
+                } else if (token == endCurly) {
+                    //End of node, go up one.
+                    //TODO: Error handling
+                    if(n.parent != null) {
+                        n = n.parent;
+                    }
                 } else if (token == colon) {
                     n[priorToken] = new Node();
                     n[priorToken].parent = n;
                     n = n[priorToken];
 
                     priorToken = colon;
-                } else if (token[0] == ' ' && token.Trim().Length == 0) {
+                } else if (
+                    token[0] == ' ' && token.Trim().Length == 0 ||
+                    token == newline
+                    ) {
                     //Whitespace! Ignore it.
                 } else {
                     //This is an edge case for YAML, but the command situation for JSON. Still, do need to trim the quotes off:
