@@ -397,47 +397,52 @@ namespace Maptionary.Tests {
 
         [TestMethod()]
         public void MixedObjectsAndArray() {
-            string data = @"{
-'objects':[{
-  'object1': {
-    'nestedObject': {
-      'key': 'value1'
-    },
-    'array': [
-        '1a',
-        '1b'
-    ],
+            string data = @"
+{
+  'objects':
+    [
+      {
+        'object1': {
+          'nestedObject': {
+            'key': 'value1'
+          },
+          'array': [
+            '1a',
+            '1b'
+          ]
+        },
+        'key': 'value'
+      },
+      {
+        'object2': {
+          'nestedObject': {
+            'key': 'value2'
+          },
+          'array': [
+            '2a',
+            '2b'
+          ]
+        },
+        'key': 'value'
+      },
+      {
+        'key': 'value',
+        'object3': {
+          'array': [
+            '3a',
+            '3b'
+          ],
+          'nestedObject': {
+            'key': 'value3'
+          }
+        }
+      }
+  ],
   'key': 'value'
-  },{
-  'object2': {
-    'nestedObject': {
-      'key': 'value2'
-    },
-    'array': [
-      '2a',
-      '2b'
-    ]
-  },
-  'key': 'value'
-  } , {
-  'key': 'value',
-  'object3': {
-    'array': [
-      '3a',
-      '3b'
-    ],
-    'nestedObject': {
-      'key': 'value3'
-    }
-  }
-],
-'key': 'value'
 }";
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n["objects"].Count == 3);
-            Assert.IsTrue(n["key"] == "value");
 
             Assert.IsTrue(n["objects"][0]["object1"]["nestedObject"]["key"] == "value1");
             Assert.IsTrue(n["objects"][0]["object1"]["array"][0] == "1a");
@@ -453,6 +458,9 @@ namespace Maptionary.Tests {
             Assert.IsTrue(n["objects"][2]["object3"]["array"][0] == "3a");
             Assert.IsTrue(n["objects"][2]["object3"]["array"][1] == "3b");
             Assert.IsTrue(n["objects"][2]["key"] == "value");
+
+            Assert.IsTrue(n["objects"].Count == 3);
+            Assert.IsTrue(n["key"] == "value");
         }
 
         //ABOVE HERE
