@@ -542,7 +542,7 @@ objects:
     - 3a
     - 3b
     nestedObject:
-      key: value
+      key: value3
 key: value";
 
             Node n = Parser.Parse(data);
@@ -565,6 +565,7 @@ key: value";
             Assert.IsTrue(n["objects"][2]["object3"]["array"][1] == "3b");
             Assert.IsTrue(n["objects"][2]["key"] == "value");
 
+            // Quick check for newline termination
             data = @"
 objects:
 - object  :  

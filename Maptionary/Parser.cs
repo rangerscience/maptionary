@@ -143,7 +143,17 @@ namespace Maptionary {
 
                     } else if (priorToken == newline) {
                         int _indentLevel = token.Length;
-                        if(_indentLevel < indentLevel) {
+
+                        // Treat arrays as 1 deeper than they are (not a full indent, which would be 2, but 1)
+                        // This nicely handles both indented and non-indented arrays
+                        string nextToken;
+                        int _i = i;
+                        ReadNextYAMLToken(ref data, ref _i, out nextToken);
+                        if (nextToken == dash) {
+                            _indentLevel += 1;
+                        }
+
+                        if (_indentLevel < indentLevel) {
                             // End of an object
                             priorToken = whitespace;
                             n = levels[_indentLevel];
@@ -154,11 +164,7 @@ namespace Maptionary {
                             indentLevel = _indentLevel;
                             priorToken = whitespace;
                         } else {
-                            // Continuing an object, unless we have an unindented array...
-                            string nextToken;
-                            int _i = i;
-                            ReadNextYAMLToken(ref data, ref _i, out nextToken);
-
+                            // Continuing an object
                             priorToken = whitespace;
                             n = levels[_indentLevel];
                         }
