@@ -521,53 +521,53 @@ key: value";
         public void MixedObjectsAndArray() {
             string data = @"
 objects:
-- object:
+- object1:
     nestedObject:
-      key: value
+      key: value1
     array:
-    - 0
-    - 1
+      - 1a
+      - 1b
   key: value
-- 
-  object:
-    array:
-    - 0
-    - 1
+-
+  object2:
     nestedObject:
-      key: value
+      key: value2
+    array:
+    - 2a
+    - 2b
   key: value
 - key: value
-  object:
+  object3:
     array:
-      - 0
-      - 1
+    - 3a
+    - 3b
     nestedObject:
       key: value
 key: value";
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n["objects"].Count == 4);
+            Assert.IsTrue(n["objects"].Count == 3);
             Assert.IsTrue(n["key"] == "value");
 
-            Assert.IsTrue(n["objects"][0]["object"]["nestedObject"]["key"] == "value");
-            Assert.IsTrue(n["objects"][0]["object"]["array"][0] == 0);
-            Assert.IsTrue(n["objects"][0]["object"]["array"][1] == 1);
+            Assert.IsTrue(n["objects"][0]["object1"]["nestedObject"]["key"] == "value1");
+            Assert.IsTrue(n["objects"][0]["object1"]["array"][0] == "1a");
+            Assert.IsTrue(n["objects"][0]["object1"]["array"][1] == "1b");
             Assert.IsTrue(n["objects"][0]["key"] == "value");
 
-            Assert.IsTrue(n["objects"][1]["object"]["nestedObject"]["key"] == "value");
-            Assert.IsTrue(n["objects"][1]["object"]["array"][0] == 0);
-            Assert.IsTrue(n["objects"][1]["object"]["array"][1] == 1);
+            Assert.IsTrue(n["objects"][1]["object2"]["nestedObject"]["key"] == "value2", "Nested key doesn't have correct value: '" + n["objects"][1]["object2"]["nestedObject"]["key"] + "'");
+            Assert.IsTrue(n["objects"][1]["object2"]["array"][0] == "2a");
+            Assert.IsTrue(n["objects"][1]["object2"]["array"][1] == "2b");
             Assert.IsTrue(n["objects"][1]["key"] == "value");
 
-            Assert.IsTrue(n["objects"][2]["object"]["nestedObject"]["key"] == "value");
-            Assert.IsTrue(n["objects"][2]["object"]["array"][0] == 0);
-            Assert.IsTrue(n["objects"][2]["object"]["array"][1] == 1);
+            Assert.IsTrue(n["objects"][2]["object3"]["nestedObject"]["key"] == "value3");
+            Assert.IsTrue(n["objects"][2]["object3"]["array"][0] == "3a");
+            Assert.IsTrue(n["objects"][2]["object3"]["array"][1] == "3b");
             Assert.IsTrue(n["objects"][2]["key"] == "value");
 
             data = @"
 objects:
-- object:
+- object  :  
     array:
     - 0";
 

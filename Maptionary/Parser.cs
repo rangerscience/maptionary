@@ -18,6 +18,12 @@ namespace Maptionary {
         const string whitespace = " ";
 
         static void ReadNextYAMLToken(ref string data, ref int i, out string token) {
+            if(i >= data.Length) {
+                //End of string? End of line.
+                token = newline;
+                return;
+            }
+
             char c = data[i];
             int _i = i; // Used for measuring whitespace and string token sizes
             switch (c) {
@@ -99,12 +105,14 @@ namespace Maptionary {
                     if (priorToken == newline && n.Keys.Count() == 0) {
                         //Our situation is otherwise fine, but we need to set the level[1] node to ourselves, so we can return correctly after de-nesting
                         levels[1] = n;
+                        indentLevel = 0; //Anything else in this node will have zero whitespace scoping
                         //Next, this node starts getting filled as an array.
                         //(Realize that the current "n" is the value node for whatever key recently preceded the colon that preceded the newline that's in priorToken)
 
                     //We can well if we're RETURNING to such a node, simply because we're in a "\n-" situation.
                     } else if (priorToken == newline) {
                         n = levels[1];
+                        indentLevel = 0; //Anything else in this node will have zero whitespace scoping
                     }
 
 
@@ -146,7 +154,11 @@ namespace Maptionary {
                             indentLevel = _indentLevel;
                             priorToken = whitespace;
                         } else {
-                            // Continuing an object
+                            // Continuing an object, unless we have an unindented array...
+                            string nextToken;
+                            int _i = i;
+                            ReadNextYAMLToken(ref data, ref _i, out nextToken);
+
                             priorToken = whitespace;
                             n = levels[_indentLevel];
                         }
@@ -157,12 +169,31 @@ namespace Maptionary {
                         token = token.Substring(1, token.Length - 2);
                     }
 
-                    if (priorToken == colon || priorToken == dash) {
+                    if (priorToken == colon) {
                         // Logically, this is leaf node, and the current token is the value
                         n.leaf = token;
-                        if(n.parent != null) {
+                        if (n.parent != null) {
                             n = n.parent;
                             //TODO: Indent level?
+                        }
+                    } else if (priorToken == dash) {
+                        // Logically, this is leaf node, and the current token is the value... unless the next token is a colon.
+
+                        string nextToken;
+                        int _i = i;
+                        ReadNextYAMLToken(ref data, ref _i, out nextToken);
+                        if(nextToken == colon) {
+                            //Mostly let things play out normally, but since we skipped handling the whitespace, we need to pretent to do that here.
+                            // Anything else inside this array element will be at the current indentLevel, plus 2
+                            int _indentLevel = indentLevel + 2;
+                            levels[_indentLevel] = n;
+                            indentLevel = _indentLevel;
+                        } else {
+                            n.leaf = token;
+                            if (n.parent != null) {
+                                n = n.parent;
+                                //TODO: Indent level?
+                            }
                         }
                     } else if (priorToken == whitespace) {
                         //Nothing special
