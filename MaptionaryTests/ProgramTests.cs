@@ -496,7 +496,6 @@ key: value";
         [TestMethod()]
         public void BasicArray_NewlineTermination() {
             string data = @"
-array:
 - a
 - - ba
   - bb
@@ -507,15 +506,15 @@ array:
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n[0] == 0);
+            Assert.IsTrue(n[0] == "a");
 
-            Assert.IsTrue(n[1][0] == 0);
-            Assert.IsTrue(n[1][1] == 1);
-            Assert.IsTrue(n[1][2] == 2);
+            Assert.IsTrue(n[1][0] == "ba");
+            Assert.IsTrue(n[1][1] == "bb");
+            Assert.IsTrue(n[1][2] == "bc");
 
-            Assert.IsTrue(n[2][0] == 0);
-            Assert.IsTrue(n[2][1] == 1);
-            Assert.IsTrue(n[2][2] == 2);
+            Assert.IsTrue(n[2][0] == "ca");
+            Assert.IsTrue(n[2][1] == "cb");
+            Assert.IsTrue(n[2][2] == "cc");
         }
 
         [TestMethod()]
