@@ -480,7 +480,17 @@ array2:
 - 2c
 key: value";
 
-            Assert.Fail();
+            Node n = Parser.Parse(data);
+
+            Assert.IsTrue(n["array1"][0] == "1a");
+            Assert.IsTrue(n["array1"][1] == "1b");
+            Assert.IsTrue(n["array1"][2] == "1c");
+
+            Assert.IsTrue(n["array2"][0] == "2a");
+            Assert.IsTrue(n["array2"][1] == "2b");
+            Assert.IsTrue(n["array2"][2] == "2c");
+
+            Assert.IsTrue(n["key"] == "value");
         }
 
         [TestMethod()]
