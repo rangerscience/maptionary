@@ -10,6 +10,7 @@ namespace Maptionary
     {
         public string leaf = null;
         public Node parent = null;
+        public bool isArray = false; //TODO: Access controls?
 
         public Node this[string key] {
             get {

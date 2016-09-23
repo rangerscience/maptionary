@@ -319,18 +319,31 @@ namespace Maptionary {
 
                     //Otherwise, there's really nothing special to do, just note that the next symbol isn't a leaf node value
                     priorToken = token;
-                } else if (token == endCurly) {
+                } else if (token == endCurly || token == endBracket) {
                     //End of node, go up one.
                     //TODO: Error handling
-                    if(n.parent != null) {
+                    if (n.parent != null) {
                         n = n.parent;
                     }
+                } else if (token == startBracket) {
+                    if (root == null) {
+                        root = new Node();
+                        n = root;
+                    }
+
+                    //Otherwise, there's really nothing special to do, just note that the next symbol isn't a leaf node value
+                    priorToken = token;
+
+                    //...and that this node is an array node
+                    n.isArray = true;
                 } else if (token == colon) {
                     n[priorToken] = new Node();
                     n[priorToken].parent = n;
                     n = n[priorToken];
 
                     priorToken = colon;
+                } else if (token == comma) {
+                    //So far, we're well handled by everything else...
                 } else if (
                     token[0] == ' ' && token.Trim().Length == 0 ||
                     token == newline
@@ -349,6 +362,13 @@ namespace Maptionary {
                             n = n.parent;
                             //TODO: Indent level?
                         }
+                    } else if (n.isArray) {
+                        // Leaf node in an array
+                        Node _n = new Node();
+                        _n.parent = n;
+                        _n.leaf = token;
+                        string key = n.Count().ToString();
+                        n[key] = _n;
                     } else {
                         //Nothing special
                     }
