@@ -8,7 +8,8 @@ namespace Maptionary {
     public class Parser {
         public static Node Parse(string data) {
             int i = 0;
-            return YAML(ref data, ref i);
+            return JSON(ref data, ref i);
+            //return YAML(ref data, ref i); TEMPORARY, until we handle mixed-format.
         }
 
         // Avoid allocations of strings wherever possible, so "cache" the keystrings:
@@ -16,7 +17,13 @@ namespace Maptionary {
         const string dash = "-";
         const string newline = "\n";
         const string whitespace = " ";
+        const string startCurly = "{";
+        const string endCurly = "}";
+        const string startBracket = "[";
+        const string endBracket = "]";
+        const string comma = ",";
 
+        //*********** YAML *************
         static void ReadNextYAMLToken(ref string data, ref int i, out string token) {
             if(i >= data.Length) {
                 //End of string? End of line.
@@ -214,6 +221,134 @@ namespace Maptionary {
             }
 
             return levels[0];
+        }
+
+
+        //*********** JSON *************
+        static void ReadNextJSONToken(ref string data, ref int i, out string token) {
+            if (i >= data.Length) {
+                //End of string? End of line.
+                token = newline;
+                return;
+            }
+
+            char c = data[i];
+            int _i = i; // Used for measuring whitespace and string token sizes
+
+            switch (c) {
+                case ':':
+                    token = colon;
+                    break;
+
+                case '{':
+                    token = startCurly;
+                    break;
+                case '}':
+                    token = endCurly;
+                    break;
+
+                case '[':
+                    token = startBracket;
+                    break;
+                case ']':
+                    token = endBracket;
+                    break;
+
+                case ',':
+                    token = comma;
+                    break;
+
+                case '\r':
+                case '\n':
+                    token = newline;
+                    break;
+
+                case '\'':
+                case '"':
+                    //This token will continue until the next quotation mark, no matter what - excepting end of data string!
+                    char sym = data[i]; // Same behavior for each
+                    _i++; //Advance past this current quotation mark
+                    while (_i < data.Length && data[_i] != sym) {
+                        _i++;
+                    }
+                    _i++; //Advance past the final quotation mark
+                    token = data.Substring(i, _i - i);
+                    break;
+
+                case ' ':
+                    //Although JSON ignores whitespace, it still needs to know how far to advance i
+                    while (_i < data.Length && data[_i] == ' ') {
+                        _i++;
+                    }
+                    token = data.Substring(i, _i - i); // TODO: This allocates an unnecessary string, but... might not decent method that avoids this allocation
+                    break;
+
+                default:
+                    // There are some JSON data types that aren't quoted (like numbers), but they all get terminated by commas, curlies, and brackets.
+                    // TODO Verify ^^
+                    while (_i < data.Length &&
+                        data[_i] != ',' &&
+                        data[_i] != '{' && data[_i] != '}' &&
+                        data[_i] != '[' && data[_i] != ']') {
+                        _i++;
+                    }
+                    token = data.Substring(i, _i - i);
+                    break;
+            }
+        }
+
+        //TODO: Copypasta from YAML parsing
+        static Node JSON(ref string data, ref int i) {
+            // Re-use the variable, to avoid string allocations and resulting GC
+            string token = null;
+            string priorToken = null;
+            Node n = null;
+            Node root = null;
+
+            while (i < data.Length) {
+
+                ReadNextJSONToken(ref data, ref i, out token);
+                i += token.Length; // Advance our counter past the token
+
+                if(token == startCurly) {
+                    // Check to see if we're the first node
+                    if(root == null) {
+                        root = new Node();
+                        n = root;
+                    }
+
+                    //Otherwise, there's really nothing special to do, just note that the next symbol isn't a leaf node value
+                    priorToken = token;
+                } else if (token == colon) {
+                    n[priorToken] = new Node();
+                    n[priorToken].parent = n;
+                    n = n[priorToken];
+
+                    priorToken = colon;
+                } else if (token[0] == ' ' && token.Trim().Length == 0) {
+                    //Whitespace! Ignore it.
+                } else {
+                    //This is an edge case for YAML, but the command situation for JSON. Still, do need to trim the quotes off:
+                    if (token[0] == '"' || token[0] == '\'') {
+                        token = token.Substring(1, token.Length - 2);
+                    }
+
+                    if (priorToken == colon) {
+                        // Logically, this is leaf node, and the current token is the value
+                        n.leaf = token;
+                        if (n.parent != null) {
+                            n = n.parent;
+                            //TODO: Indent level?
+                        }
+                    } else {
+                        //Nothing special
+                    }
+
+                    priorToken = token;
+                }
+            }
+
+            return root;
         }
     }
 }

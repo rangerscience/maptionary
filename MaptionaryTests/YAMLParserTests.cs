@@ -30,7 +30,7 @@ key3: value3
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n["key1"] == "value1", "Flat YAML key doesn't have correct value: '" + n["key1"] + "'");
+            Assert.IsTrue(n["key1"] == "value1", "Flat key doesn't have correct value: '" + n["key1"] + "'");
             Assert.IsTrue(n["key2"] == "value2");
             Assert.IsTrue(n["key3"] == "value3");
         }
@@ -47,6 +47,7 @@ key: value2
             //TODO: Desired behavior?
             Assert.IsTrue(n["key"] == "value2", "Repeated key doesn't overwrite prior key");
         }
+
         [TestMethod()]
         public void Quotations() {
             string data = @"
