@@ -93,15 +93,29 @@ namespace Maptionary {
                     //TODO: Nodes should know they're an array
                     // A dash is basically "fill in this key with an array index, then a colon"
 
+                    //Arrays have an annoying edge case where there's a non-indented array appearing to be at "root" level - aka, "\n- value"
+                    //We have consider a case where there's multiple such arrays as values in the root node - "array1:\n- 1a\narray2:\n- 2a"
+                    //We can tell if we're a NEW node, because the recent hit of a ":" has left us with an empty `n`.
+                    if (priorToken == newline && n.Keys.Count() == 0) {
+                        //Our situation is otherwise fine, but we need to set the level[1] node to ourselves, so we can return correctly after de-nesting
+                        levels[1] = n;
+                        //Next, this node starts getting filled as an array.
+                        //(Realize that the current "n" is the value node for whatever key recently preceded the colon that preceded the newline that's in priorToken)
+
+                    //We can well if we're RETURNING to such a node, simply because we're in a "\n-" situation.
+                    } else if (priorToken == newline) {
+                        n = levels[1];
+                    }
+
+
                     string key = n.Keys.Count().ToString(); // 0 keys gets key '0', 1 key gets key '1' (so, say, '0' and '1')
                     n[key] = new Node();
                     n[key].parent = n;
                     n = n[key];
 
-                    //Arrays are a little weird; we need to check some whitespacing edge cases.
-                    if (priorToken == newline) {
-                        levels[2] = n;
-                    }
+                    // So, we check to see if we're a "\n-" situation, AND this is a new node (presumable, freshly created by handling the ':')
+                    // TODO: Numerical "ContainsKey"
+
 
                     priorToken = dash;
                 } else if (token == newline) {

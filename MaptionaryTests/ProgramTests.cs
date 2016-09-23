@@ -411,41 +411,91 @@ array:
         public void NestedArray() {
             string data = @"
 array:
-- 0
-- - 0
-  - 1
-  - 2
--   - 0
-    - 1
-    - 2
-- 3
+- a
+- - ba
+  - bb
+  - bc
+-   - ca
+    - cb
+    - cc
+- c
 key: value";
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n[0] == 0);
-            Assert.IsTrue(n[3] == 3);
+            Assert.IsTrue(n["array"][0] == "a");
+
+            Assert.IsTrue(n["array"][1][0] == "ba");
+            Assert.IsTrue(n["array"][1][1] == "bb");
+            Assert.IsTrue(n["array"][1][2] == "bc");
+
+            Assert.IsTrue(n["array"][2][0] == "ca");
+            Assert.IsTrue(n["array"][2][1] == "cb");
+            Assert.IsTrue(n["array"][2][2] == "cc");
+
+            Assert.IsTrue(n["array"][3] == "c");
             Assert.IsTrue(n["key"] == "value");
+        }
 
-            Assert.IsTrue(n[1][0] == 0);
-            Assert.IsTrue(n[1][1] == 1);
-            Assert.IsTrue(n[1][2] == 2);
-
-            Assert.IsTrue(n[2][0] == 0);
-            Assert.IsTrue(n[2][1] == 1);
-            Assert.IsTrue(n[2][2] == 2);
-
-            data = @"
+        [TestMethod()]
+        public void NestedIndentedArray() {
+            string data = @"
 array:
-- 0
-- - 0
-  - 1
-  - 2
--   - 0
-    - 1
-    - 2";
+  - a
+  - - ba
+    - bb
+    - bc
+  -   - ca
+      - cb
+      - cc
+  - c
+key: value";
 
-            n = Parser.Parse(data);
+            Node n = Parser.Parse(data);
+
+            Assert.IsTrue(n["array"][0] == "a");
+
+            Assert.IsTrue(n["array"][1][0] == "ba");
+            Assert.IsTrue(n["array"][1][1] == "bb");
+            Assert.IsTrue(n["array"][1][2] == "bc");
+
+            Assert.IsTrue(n["array"][2][0] == "ca");
+            Assert.IsTrue(n["array"][2][1] == "cb");
+            Assert.IsTrue(n["array"][2][2] == "cc");
+
+            Assert.IsTrue(n["array"][3] == "c");
+            Assert.IsTrue(n["key"] == "value");
+        }
+
+        [TestMethod()]
+        public void MultipleUnindentedRootArrays() {
+            string data = @"
+array1:
+- 1a
+- 1b
+- 1c
+array2:
+- 2a
+- 2b
+- 2c
+key: value";
+
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void BasicArray_NewlineTermination() {
+            string data = @"
+array:
+- a
+- - ba
+  - bb
+  - bc
+-   - ca
+    - cb
+    - cc";
+
+            Node n = Parser.Parse(data);
 
             Assert.IsTrue(n[0] == 0);
 
@@ -456,38 +506,6 @@ array:
             Assert.IsTrue(n[2][0] == 0);
             Assert.IsTrue(n[2][1] == 1);
             Assert.IsTrue(n[2][2] == 2);
-
-            data = @"
-array:
-- 0
-- - 0
-  - 1
-  - - 0
-    - 1
-- - 0
-  - 1";
-
-            n = Parser.Parse(data);
-
-            Assert.IsTrue(n[0] == 0);
-
-            Assert.IsTrue(n[1][0] == 0);
-            Assert.IsTrue(n[1][1] == 1);
-
-            Assert.IsTrue(n[2][0] == 0);
-            Assert.IsTrue(n[2][1] == 1);
-
-            Assert.IsTrue(n[1][2][0] == 0);
-            Assert.IsTrue(n[1][2][1] == 1);
-
-            data = @"
-array:
-- 0
-- - 0
-  - - 0
-    - 1";
-
-            Assert.IsTrue(n[1][1][1] == 1);
         }
 
         [TestMethod()]
