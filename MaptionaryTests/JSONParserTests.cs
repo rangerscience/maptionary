@@ -189,7 +189,7 @@ namespace Maptionary.Tests {
         public void NestedObjects() {
             string data = @"{
 'object1': {
-  'key1: 'value11',
+  'key1': 'value11',
   'innerObject1': {
     'key1': 'value111',
     'key2': 'value112',
@@ -208,9 +208,9 @@ namespace Maptionary.Tests {
     'key3': 'value133',
   }
 },
-'object2':
+'object2': {
   'key1': 'value21',
-  'level2Object1':
+  'level2Object1': {
     'key': 'value',
     'level3Object1': {
       'level4Object1': {
