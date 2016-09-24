@@ -51,6 +51,7 @@ namespace Maptionary {
         const string dash = "-";
         const string newline = "\n";
         const string whitespace = " ";
+        const string yamlObjectStart = "---";
 
         const string startCurly = "{";
         const string endCurly = "}";
@@ -77,7 +78,14 @@ namespace Maptionary {
                     token = colon;
                     break;
                 case '-':
-                    token = dash;
+                    if( (i + 1) < data.Length && data[i + 1] == '-' &&
+                        (i + 3) < data.Length && data[i + 2] == '-'
+                        ) {
+                        // We have ---, the start of a YAML object
+                        token = yamlObjectStart;
+                    } else {
+                        token = dash;
+                    }
                     break;
                 case '\r':
                 case '\n':
@@ -146,7 +154,9 @@ namespace Maptionary {
                 // (Remember that numbers are treated as strings)
 
                 //TODO: ===?
-                if (token == colon) {
+                if(token == yamlObjectStart) {
+                    //Nothing special to do at this point, pretty much just ignore it.
+                } else if (token == colon) {
                     //TODO: Error checking! If there's no priorToken, our presumptive logic doesn't work.
                     // Presuming correct YAML, the priorToken is, logically, a key
                     n[priorToken] = new Node();
