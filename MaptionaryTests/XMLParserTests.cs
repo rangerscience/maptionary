@@ -35,7 +35,7 @@ namespace MaptionaryTests {
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n["key"] == "  value\n  ");
+            Assert.IsTrue(n["key"] == "  value\r\n  ", "Whitespace preservation seems off: '" + n["key"] + "'. Could be line endings");
         }
 
         //Added "feature", mostly for ease in writing the test data.
