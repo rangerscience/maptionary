@@ -8,9 +8,10 @@ namespace Maptionary {
     public class Parser {
         public static Node Parse(string data) {
             int i = 0;
+            Node root = new Node();
 
             //Skip leading newlines
-            while(i < data.Length && (data[i] == '\n' || data[i] == '\r')) {
+            while (i < data.Length && (data[i] == '\n' || data[i] == '\r')) {
                 i++;
             }
 
@@ -25,19 +26,24 @@ namespace Maptionary {
 
                 case '<':
                     //XML
-                    return XML(ref data, ref i);
+                    XML(ref data, ref i, ref root);
+                    break;
 
                 case '{':
                 case '[':
                     // JSON control characters
-                    return JSON(ref data, ref i);
+                    JSON(ref data, ref i, ref root);
+                    break;
                 
                 case '-':
                     //YAML. Either the start of an array, or the start of the document signifier (---)
                 default:
                     // Naked character. That means YAML!
-                    return YAML(ref data, ref i);
+                    YAML(ref data, ref i, ref root);
+                    break;
             }
+
+            return root;
         }
 
         // Avoid allocations of strings wherever possible, so "cache" the keystrings:
@@ -67,6 +73,14 @@ namespace Maptionary {
             char c = data[i];
             int _i = i; // Used for measuring whitespace and string token sizes
             switch (c) {
+                case '{':
+                    token = startCurly;
+                    break;
+
+                case '[':
+                    token = startBracket;
+                    break;
+                
                 case ':':
                     token = colon;
                     break;
@@ -107,18 +121,20 @@ namespace Maptionary {
             }
         }
 
-        static Node YAML(ref string data, ref int i) {
+        static void YAML(ref string data, ref int i, ref Node root) {
+
+            // We need our own reference to the current node, since we'll move it around, but need the root ref to stay the same
+            Node n = root;
 
             // Re-use the variable, to avoid string allocations and resulting GC
             string token = null;
 
             // TODO: Explain why we want to set priorToken to newline
             string priorToken = "\n";
-            Node n = new Node();
 
             int indentLevel = 0;
             Node[] levels = new Node[100]; // Handle 50 levels deep inherently.
-            levels[0] = n; //Root node is at 0
+            levels[0] = root;
 
             while (i < data.Length) {
 
@@ -129,6 +145,11 @@ namespace Maptionary {
                 // (Remember that numbers are treated as strings)
 
                 //TODO: ===?
+                if(token == startCurly || token == startBracket) {
+                    //JSON!
+                    JSON(ref data, ref i, ref n);
+                }
+
                 if (token == colon) {
                     //TODO: Error checking! If there's no priorToken, our presumptive logic doesn't work.
                     // Presuming correct YAML, the priorToken is, logically, a key
@@ -254,8 +275,6 @@ namespace Maptionary {
                     priorToken = token;
                 }
             }
-
-            return levels[0];
         }
 
 
@@ -333,12 +352,11 @@ namespace Maptionary {
         }
 
         //TODO: Copypasta from YAML parsing
-        static Node JSON(ref string data, ref int i) {
+        static void JSON(ref string data, ref int i, ref Node root) {
             // Re-use the variable, to avoid string allocations and resulting GC
             string token = null;
             string priorToken = null;
-            Node n = null;
-            Node root = null;
+            Node n = root;
 
             while (i < data.Length) {
 
@@ -346,11 +364,6 @@ namespace Maptionary {
                 i += token.Length; // Advance our counter past the token
 
                 if (token == startCurly || token == startBracket) {
-                    // Check to see if we're the first node
-                    if (root == null) {
-                        root = new Node();
-                        n = root;
-                    }
 
                     //Check if this is actually the start of an object (or array) as an element of an array.
                     if (n.isArray) {
@@ -419,8 +432,6 @@ namespace Maptionary {
                     priorToken = token;
                 }
             }
-
-            return root;
         }
 
         //*********** XML *************
@@ -472,12 +483,11 @@ namespace Maptionary {
         }
 
 
-        static Node XML(ref string data, ref int i) {
+        static void XML(ref string data, ref int i, ref Node root) {
             // Re-use the variables, to avoid string allocations and resulting GC
             string token = null;
             string priorToken = null;
-            Node n = new Node();
-            Node root = n;
+            Node n = root;
             Node _n = new Node(); //This is a junk node, but to avoid compiler errors, need to create it
 
             while (i < data.Length) {
@@ -520,8 +530,6 @@ namespace Maptionary {
                     }
                 }
             }
-
-            return root;
         }
     }
 }
