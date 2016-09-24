@@ -72,15 +72,7 @@ namespace Maptionary {
 
             char c = data[i];
             int _i = i; // Used for measuring whitespace and string token sizes
-            switch (c) {
-                case '{':
-                    token = startCurly;
-                    break;
-
-                case '[':
-                    token = startBracket;
-                    break;
-                
+            switch (c) {                
                 case ':':
                     token = colon;
                     break;
@@ -138,6 +130,15 @@ namespace Maptionary {
 
             while (i < data.Length) {
 
+                //Peak at the next symbol, in case it involves switching to a different format.
+                if (data[i] == '{' || data[i] == '[') {
+                    //JSON!
+                    JSON(ref data, ref i, ref n);
+                } else if (data[i] == '<') {
+                    //XML!
+                    XML(ref data, ref i, ref n);
+                }
+
                 ReadNextYAMLToken(ref data, ref i, out token);
                 i += token.Length; // Advance our counter past the token
 
@@ -145,11 +146,6 @@ namespace Maptionary {
                 // (Remember that numbers are treated as strings)
 
                 //TODO: ===?
-                if(token == startCurly || token == startBracket) {
-                    //JSON!
-                    JSON(ref data, ref i, ref n);
-                }
-
                 if (token == colon) {
                     //TODO: Error checking! If there's no priorToken, our presumptive logic doesn't work.
                     // Presuming correct YAML, the priorToken is, logically, a key
