@@ -416,6 +416,19 @@ namespace Maptionary {
                 case '>':
                     token = closeCarrot;
                     break;
+
+                case '\'':
+                case '"':
+                    //This token will continue until the next quotation mark, no matter what - excepting end of data string!
+                    char sym = data[i]; // Same behavior for each
+                    _i++; //Advance past this current quotation mark
+                    while (_i < data.Length && data[_i] != sym) {
+                        _i++;
+                    }
+                    _i++; //Advance past the final quotation mark
+                    token = data.Substring(i, _i - i);
+                    break;
+
                 default:
                     //I think only carrots terminate these tokens
                     while (_i < data.Length &&
@@ -461,7 +474,13 @@ namespace Maptionary {
                     n = n.parent;
                     priorToken = token;
                 } else {
-                    if(priorToken == openCarrot) {
+                    //Edge case!
+                    // TODO: What about <key>"value"</> ? Should we still strip quotes?
+                    if (token[0] == '"' || token[0] == '\'') {
+                        token = token.Substring(1, token.Length - 2);
+                    }
+
+                    if (priorToken == openCarrot) {
                         //Key value! Stick the new node in with this key.
                         n[token] = _n;
                     } else if (priorToken == closeCarrot) {
