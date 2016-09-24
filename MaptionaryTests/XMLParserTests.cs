@@ -171,16 +171,19 @@ namespace MaptionaryTests {
     <key1>value111</>
     <key2>value112</>
     <key3>value113</>
+  </>
   <innerObject2>
     <key1>value121</>
     <key2>value122</>
     <key3>value123</>
+  </>
   <key2>value12</>
   <key3>value13</>
   <innerObject3>
     <key1>value131</>
     <key2>value132</>
     <key3>value133</>
+  </>
 </>
 <object2>
   <key1>value21</>
@@ -189,13 +192,19 @@ namespace MaptionaryTests {
     <level3Object1>
       <level4Object1>
         <key>value</>
+      </>
       <key>value</>
       <level4Object2>
         <key>value</>
+      </>
+    </>
     <level3Object2>
       <key>value</>
+    </>
+  </>
   <level2Object2>
     <key>value</>
+  </>
   <key2>value22</>
   <key3>value23</>
 </>
@@ -207,12 +216,6 @@ namespace MaptionaryTests {
             Assert.IsTrue(n["object1"]["key1"] == "value11");
             Assert.IsTrue(n["object1"]["key2"] == "value12");
             Assert.IsTrue(n["object1"]["key3"] == "value13");
-
-            Assert.IsTrue(n["object2"]["key1"] == "value21");
-            Assert.IsTrue(n["object2"]["key2"] == "value22");
-            Assert.IsTrue(n["object2"]["key3"] == "value23");
-
-            Assert.IsTrue(n["key"] == "value");
 
             Assert.IsTrue(n["object1"]["innerObject1"]["key1"] == "value111");
             Assert.IsTrue(n["object1"]["innerObject1"]["key2"] == "value112");
@@ -226,12 +229,18 @@ namespace MaptionaryTests {
             Assert.IsTrue(n["object1"]["innerObject3"]["key2"] == "value132");
             Assert.IsTrue(n["object1"]["innerObject3"]["key3"] == "value133");
 
+            Assert.IsTrue(n["object2"]["key1"] == "value21");
+            Assert.IsTrue(n["object2"]["key2"] == "value22");
+            Assert.IsTrue(n["object2"]["key3"] == "value23");
+
             Assert.IsTrue(n["object2"]["level2Object1"]["key"] == "value");
             Assert.IsTrue(n["object2"]["level2Object2"]["key"] == "value");
             Assert.IsTrue(n["object2"]["level2Object1"]["level3Object1"]["key"] == "value");
             Assert.IsTrue(n["object2"]["level2Object1"]["level3Object2"]["key"] == "value");
             Assert.IsTrue(n["object2"]["level2Object1"]["level3Object1"]["level4Object1"]["key"] == "value");
             Assert.IsTrue(n["object2"]["level2Object1"]["level3Object1"]["level4Object2"]["key"] == "value");
+
+            Assert.IsTrue(n["key"] == "value");
         }
 
     } // ABOVE THIS
