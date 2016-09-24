@@ -506,6 +506,21 @@ namespace Maptionary {
 
             while (i < data.Length) {
 
+                //Peak at the next symbol, skipping whitespace, in case it involves switching to a different format.
+                int _i = i;
+                while(_i < data.Length && (data[_i] == ' ' || data[_i] == '\r' || data[_i] == '\n')) {
+                    _i++;
+                }
+                if (_i >= data.Length) {
+                    //Just some end-of-data whitespace; we're done!
+                    return;
+                } else if (data[_i] == '{' || data[_i] == '[') {
+                    //JSON!
+                    JSON(ref data, ref i, ref n);
+                } else if (data[_i] == '-') {
+                    YAML(ref data, ref i, ref n);
+                }
+
                 ReadNextXMLToken(ref data, ref i, out token);
                 i += token.Length; // Advance our counter past the token
 

@@ -97,11 +97,11 @@ data:
 
         [TestMethod]
         public void JSONContainsYAML_Simplest_Flat() {
-            string data = @"{'data':---\nkey: value}";
+            string data = "{'data':---\nkey: value\n}";
 
             Node n = Parser.Parse(data);
 
-            //Assert.IsTrue(n["data"]["key"] == "value"); This test won't succeed because the "\n" isn't getting rendered to a newline. Not worth worrying about right now.
+            Assert.IsTrue(n["data"]["key"] == "value");
         }
 
         [TestMethod]
@@ -164,12 +164,12 @@ data:
 
             Node n = Parser.Parse(data);
 
-            Assert.IsTrue(n["data"]["key"] == "value");
+            Assert.IsTrue(n["data"][0] == "value");
         }
 
         [TestMethod]
         public void XMLContainsYAML_Simplest_Flat() {
-            string data = @"<data>---\nkey: value</>";
+            string data = "<data>---\nkey: value\n</>"; //YAML requires newlines. Really can't actually be flat.
 
             Node n = Parser.Parse(data);
 
