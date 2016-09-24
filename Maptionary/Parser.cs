@@ -356,6 +356,14 @@ namespace Maptionary {
 
             while (i < data.Length) {
 
+                //Peak ahead in case we're changing formats
+                if (data[i] == '<') {
+                    //XML!
+                    XML(ref data, ref i, ref n);
+                } else if (data[i] == '-') {
+                    YAML(ref data, ref i, ref n);
+                }
+
                 ReadNextJSONToken(ref data, ref i, out token);
                 i += token.Length; // Advance our counter past the token
 
