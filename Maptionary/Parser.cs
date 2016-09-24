@@ -8,9 +8,36 @@ namespace Maptionary {
     public class Parser {
         public static Node Parse(string data) {
             int i = 0;
-            return XML(ref data, ref i);
-            //return YAML(ref data, ref i); TEMPORARY, until we handle mixed-format.
-            //return JSON(ref data, ref i);
+
+            //Skip leading newlines
+            while(i < data.Length && (data[i] == '\n' || data[i] == '\r')) {
+                i++;
+            }
+
+
+            //Peak at the first non-whitespace
+            int _i = i;
+            while(_i < data.Length && data[_i] == ' ') {
+                _i++;
+            }
+
+            switch(data[_i]) {
+
+                case '<':
+                    //XML
+                    return XML(ref data, ref i);
+
+                case '{':
+                case '[':
+                    // JSON control characters
+                    return JSON(ref data, ref i);
+                
+                case '-':
+                    //YAML. Either the start of an array, or the start of the document signifier (---)
+                default:
+                    // Naked character. That means YAML!
+                    return YAML(ref data, ref i);
+            }
         }
 
         // Avoid allocations of strings wherever possible, so "cache" the keystrings:
@@ -84,7 +111,9 @@ namespace Maptionary {
 
             // Re-use the variable, to avoid string allocations and resulting GC
             string token = null;
-            string priorToken = null;
+
+            // TODO: Explain why we want to set priorToken to newline
+            string priorToken = "\n";
             Node n = new Node();
 
             int indentLevel = 0;
