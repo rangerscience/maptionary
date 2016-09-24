@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace Maptionary.Tests {
     //TODO: Test safe parsing of malformed YAML
     //TODO: Tests againts lots of extra whitespace - trailing, newlines, empty lines, etc (remember to handle \r and \n, and \r\n)
+    //TODO: Proper YAML headers ("---\n")
+    //TODO: Unquoted JSON-style objects and arrays (k1:[a,b,c]\nk2:{a: b})
     [TestClass()]
     public class YAMLParserTests {
         [TestMethod()]
