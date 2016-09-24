@@ -8,8 +8,9 @@ namespace Maptionary {
     public class Parser {
         public static Node Parse(string data) {
             int i = 0;
-            return JSON(ref data, ref i);
+            return XML(ref data, ref i);
             //return YAML(ref data, ref i); TEMPORARY, until we handle mixed-format.
+            //return JSON(ref data, ref i);
         }
 
         // Avoid allocations of strings wherever possible, so "cache" the keystrings:
@@ -17,15 +18,20 @@ namespace Maptionary {
         const string dash = "-";
         const string newline = "\n";
         const string whitespace = " ";
+
         const string startCurly = "{";
         const string endCurly = "}";
         const string startBracket = "[";
         const string endBracket = "]";
         const string comma = ",";
 
+        const string openCarrot = "<";
+        const string closeCarrot = ">";
+        const string endObject = "</";
+
         //*********** YAML *************
         static void ReadNextYAMLToken(ref string data, ref int i, out string token) {
-            if(i >= data.Length) {
+            if (i >= data.Length) {
                 //End of string? End of line.
                 token = newline;
                 return;
@@ -59,13 +65,13 @@ namespace Maptionary {
                     while (_i < data.Length && data[_i] == ' ') {
                         _i++;
                     }
-                    token = data.Substring(i, _i - i); // TODO: This allocates an unnecessary string, but... might not decent method that avoids this allocation
+                    token = data.Substring(i, _i - i); // TODO: This allocates an unnecessary string, but... might not be a decent method that avoids this allocation
                     break;
                 default:
                     // Only newlines and colons break the symbol - and the end of the data string!
-                    while (_i < data.Length && 
-                        data[_i] != '\n' && 
-                        data[_i] != '\r' && 
+                    while (_i < data.Length &&
+                        data[_i] != '\n' &&
+                        data[_i] != '\r' &&
                         data[_i] != ':') {
                         _i++;
                     }
@@ -113,10 +119,10 @@ namespace Maptionary {
                         //Our situation is otherwise fine, but we need to set the level[1] node to ourselves, so we can return correctly after de-nesting
                         levels[1] = n;
                         indentLevel = 0; //Anything else in this node will have zero whitespace scoping
-                        //Next, this node starts getting filled as an array.
-                        //(Realize that the current "n" is the value node for whatever key recently preceded the colon that preceded the newline that's in priorToken)
+                                         //Next, this node starts getting filled as an array.
+                                         //(Realize that the current "n" is the value node for whatever key recently preceded the colon that preceded the newline that's in priorToken)
 
-                    //We can well if we're RETURNING to such a node, simply because we're in a "\n-" situation.
+                        //We can well if we're RETURNING to such a node, simply because we're in a "\n-" situation.
                     } else if (priorToken == newline) {
                         n = levels[1];
                         indentLevel = 0; //Anything else in this node will have zero whitespace scoping
@@ -136,13 +142,13 @@ namespace Maptionary {
                 } else if (token == newline) {
                     if (priorToken == dash) {
                         // Ignore this newline, we're in an array object, and it's allowed to start on the next line
-                    //} else if (priorToken == colon) {
+                        //} else if (priorToken == colon) {
                         // Beginning a new object, ignore this newline
                     } else {
                         // Whatever the result of this is, it'll be handled by the next token.
                         priorToken = newline;
                     }
-                    
+
                 } else if (token[0] == ' ' && token.Trim().Length == 0) { // Although there are better methods, we need to be compatible with the Unity version of C#
 
                     if (priorToken == colon || priorToken == dash) {
@@ -195,7 +201,7 @@ namespace Maptionary {
                         string nextToken;
                         int _i = i;
                         ReadNextYAMLToken(ref data, ref _i, out nextToken);
-                        if(nextToken == colon) {
+                        if (nextToken == colon) {
                             //Mostly let things play out normally, but since we skipped handling the whitespace, we need to pretent to do that here.
                             // Anything else inside this array element will be at the current indentLevel, plus 2
                             int _indentLevel = indentLevel + 2;
@@ -215,7 +221,7 @@ namespace Maptionary {
                         n = levels[0];
                         indentLevel = 0;
                     }
-                    
+
                     priorToken = token;
                 }
             }
@@ -382,6 +388,88 @@ namespace Maptionary {
                     }
 
                     priorToken = token;
+                }
+            }
+
+            return root;
+        }
+
+        //*********** XML *************
+        static void ReadNextXMLToken(ref string data, ref int i, out string token) {
+            if (i >= data.Length) {
+                //End of string? End of line.
+                token = newline;
+                return;
+            }
+
+            char c = data[i];
+            int _i = i; // Used for measuring whitespace and string token sizes
+            switch (c) {
+                case '<':
+                    if( (i+1) < data.Length && data[i+1] == '/' ) {
+                        //Read to next >
+                        token = endObject;
+                    } else {
+                        token = openCarrot;
+                    }
+                    break;
+                case '>':
+                    token = closeCarrot;
+                    break;
+                default:
+                    //I think only carrots terminate these tokens
+                    while (_i < data.Length &&
+                        data[_i] != '<' &&
+                        data[_i] != '>'
+                        ) {
+                        _i++;
+                    }
+                    token = data.Substring(i, _i - i);
+                    break;
+            }
+        }
+
+
+        static Node XML(ref string data, ref int i) {
+            // Re-use the variables, to avoid string allocations and resulting GC
+            string token = null;
+            string priorToken = null;
+            Node n = new Node();
+            Node root = n;
+            Node _n = new Node(); //This is a junk node, but to avoid compiler errors, need to create it
+
+            while (i < data.Length) {
+
+                ReadNextXMLToken(ref data, ref i, out token);
+                i += token.Length; // Advance our counter past the token
+
+                if (token == openCarrot) {
+                    //We're going to have a new node.
+                    _n = new Node();
+                    _n.parent = n;
+                    priorToken = token;
+                } else if (token == closeCarrot) {
+                    //  Now we're in the node, unless we just finished ending an object.
+                    if (priorToken == endObject) {
+                        //Meh. Nothing to do, but remember we hit a close carrot.
+                        priorToken = token;
+                    } else {
+                        n = _n;
+                        priorToken = token;
+                    }
+                } else if (token == endObject) {
+                    n = n.parent;
+                    priorToken = token;
+                } else {
+                    if(priorToken == openCarrot) {
+                        //Key value! Stick the new node in with this key.
+                        n[token] = _n;
+                    } else if (priorToken == closeCarrot) {
+                        // Value for the node!
+                        n.leaf = token;
+                    } else if (priorToken == endObject) {
+                        //Closing tag. Notionally, matches an opening tag, but eh. Just ignore it.
+                    }
                 }
             }
 
