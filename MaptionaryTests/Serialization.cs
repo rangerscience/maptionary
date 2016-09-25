@@ -10,10 +10,16 @@ namespace MaptionaryTests {
             Node n = new Node();
 
             n["key"] = "value";
-            string data = @"---
-key: value".Replace("\r", "");
 
-            Assert.AreEqual(data, n.ToYAML());
+            string data = @"---
+key: value";
+
+            Assert.AreEqual(data.Replace("\r", ""), n.ToYAML());
+
+            data = @"{
+  ""key"": ""value""
+}";
+            Assert.AreEqual(data.Replace("\r", ""), n.ToJSON());
         }
 
         [TestMethod()]
@@ -23,12 +29,22 @@ key: value".Replace("\r", "");
             n["key1"] = "value1";
             n["key2"] = "value2";
             n["key3"] = "value3";
+
             string data = @"---
 key1: value1
 key2: value2
-key3: value3".Replace("\r", "");
+key3: value3";
 
-            Assert.AreEqual(data, n.ToYAML());
+            Assert.AreEqual(data.Replace("\r", ""), n.ToYAML());
+
+            data = @"{
+  'key1': 'value1',
+  'key2': 'value2',
+  'key3': 'value3'
+}".Replace("'", "\"");
+
+            Assert.AreEqual(data.Replace("\r", ""), n.ToJSON());
+
         }
 
         [TestMethod()]
@@ -43,6 +59,19 @@ key3: value3".Replace("\r", "");
 key: "" edging whitespace """.Replace("\r", "").Replace("\\n", "\n");
 
             Assert.AreEqual(data, n.ToYAML());
+
+            //TODO: JSON quotes and escapes, by which I mean escapes, because they're already quoted.
+        }
+
+        [TestMethod()]
+        public void JSONNakedNumbers() {
+            Node n = new Node();
+
+            n[1] = 1.23;
+
+            string data = "{1: 1.23}";
+
+            Assert.AreEqual(data, n.ToJSON());
         }
 
         [TestMethod()]
@@ -59,9 +88,21 @@ object:
   key1: value1
   key2: value2
   key3: value3
-key: value".Replace("\r", "");
+key: value";
 
-            Assert.AreEqual(data, n.ToYAML());
+            Assert.AreEqual(data.Replace("\r", ""), n.ToYAML());
+
+            data = @"{ 
+  'object': 
+  {
+    'key1': 'value1',
+    'key2': 'value2',
+    'key3': 'value3',
+  },
+  'key': 'value'
+}".Replace("'", "\"");
+
+            Assert.AreEqual(data.Replace("\r", ""), n.ToJSON());
         }
 
         [TestMethod()]
@@ -85,9 +126,25 @@ object2:
   key1: value4
   key2: value5
   key3: value6
-key: value".Replace("\r", "");
+key: value";
 
-            Assert.AreEqual(data, n.ToYAML());
+            Assert.AreEqual(data.Replace("\r", ""), n.ToYAML());
+
+            data = @"{
+  'object1': {
+    'key1': 'value1',
+    'key2': 'value2',
+    'key3': 'value3',
+  },
+  'object2': {
+    'key1': 'value3'
+    'key2': 'value4'
+    'key3': 'value5'
+  },
+  'key': 'value',
+}".Replace("'", "\"");
+
+            Assert.AreEqual(data.Replace("\r", ""), n.ToJSON());
         }
 
         [TestMethod()]
@@ -108,6 +165,19 @@ array:
 key: value".Replace("\r", "");
 
             Assert.AreEqual(data, n.ToYAML());
+
+            data = @"{
+  'array':
+    [
+      'a',
+      'b',
+      'c'
+    ]
+  'key': 'value'
+}".Replace("'", "\"");
+
+            Assert.AreEqual(data.Replace("\r", ""), n.ToJSON());
+
         }
 
         [TestMethod()]
@@ -133,9 +203,27 @@ array2:
   - 2a
   - 2b
   - 2c
-key: value".Replace("\r", "");
+key: value";
 
-            Assert.AreEqual(data, n.ToYAML());
+            Assert.AreEqual(data.Replace("\r", ""), n.ToYAML());
+
+            data = @"{
+  'array1':
+    [
+      '1a',
+      '1b',
+      '1c'
+    ],
+  'array2':
+    [
+      '2a',
+      '2b',
+      '2c'
+    ]
+  'key': 'value'
+}".Replace("'", "\"");
+
+            Assert.AreEqual(data.Replace("\r", ""), n.ToJSON());
         }
 
         [TestMethod()]
@@ -190,6 +278,51 @@ objects:
         key: value3".Replace("\r", "");
 
             Assert.AreEqual(data, n.ToYAML());
+
+            data = @"{
+  'objects':
+    [
+      {
+        'object1': {
+          'nestedObject': {
+            'key': 'value1'
+          },
+          'array': [
+            '1a',
+            '1b'
+          ]
+        },
+        'key': 'value'
+      },
+      {
+        'object2': {
+          'nestedObject': {
+            'key': 'value2'
+          },
+          'array': [
+            '2a',
+            '2b'
+          ]
+        },
+        'key': 'value'
+      },
+      {
+        'key': 'value',
+        'object3': {
+          'array': [
+            '3a',
+            '3b'
+          ],
+          'nestedObject': {
+            'key': 'value3'
+          }
+        }
+      }
+  ],
+  'key': 'value'
+}".Replace("\r", "").Replace("'", "\"");
+
+            Assert.AreEqual(data, n.ToJSON());
         }
 
     } // ABOVE THIS

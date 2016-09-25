@@ -168,5 +168,9 @@ namespace Maptionary
             }
             return s;
         }
+
+        public string ToJSON() {
+            return "";
+        }
     }
 }
