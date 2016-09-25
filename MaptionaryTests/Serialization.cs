@@ -131,17 +131,19 @@ key: value";
             Assert.AreEqual(data.Replace("\r", ""), n.ToYAML());
 
             data = @"{
-  'object1': {
-    'key1': 'value1',
-    'key2': 'value2',
-    'key3': 'value3',
-  },
-  'object2': {
-    'key1': 'value3'
-    'key2': 'value4'
-    'key3': 'value5'
-  },
-  'key': 'value',
+  'object1':
+    {
+      'key1': 'value1',
+      'key2': 'value2',
+      'key3': 'value3'
+    },
+  'object2':
+    {
+      'key1': 'value4',
+      'key2': 'value5',
+      'key3': 'value6'
+    },
+  'key': 'value'
 }".Replace("'", "\"");
 
             Assert.AreEqual(data.Replace("\r", ""), n.ToJSON());
