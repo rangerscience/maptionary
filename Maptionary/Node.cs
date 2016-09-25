@@ -142,18 +142,24 @@ namespace Maptionary
 
         string _ToYAML() {
             if (leaf != null) {
-                return this.leaf;
+                return EscapeYAML(this.leaf);
             } else {
                 string s = "";
                 foreach(KeyValuePair<String, Node> entry in this) {
-                    s += "\n" + entry.Key + ": " + entry.Value._ToYAML();
+                    s += "\n" + EscapeYAML(entry.Key) + ": " + entry.Value._ToYAML();
                 }
                 return s;
             }
-            return "";
         }
 
         public static string EscapeYAML(string s) {
+            if(
+                s.Contains(':') ||
+                s.Contains('\n') ||
+                s.Contains('\r') ||
+                s[0] == ' ' || s[s.Length-1] == ' ') {
+                return "\"" + s + "\"";
+            }
             return s;
         }
     }
