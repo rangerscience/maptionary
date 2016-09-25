@@ -143,6 +143,12 @@ namespace Maptionary
         string _ToYAML(string level) {
             if (leaf != null) {
                 return " " + EscapeYAML(this.leaf);
+            } else if (isArray) {
+                string s = "";
+                foreach (KeyValuePair<String, Node> entry in this) {
+                    s += "\n" + level + "-" + entry.Value._ToYAML(level + "  ");
+                }
+                return s;
             } else {
                 string s = "";
                 foreach(KeyValuePair<String, Node> entry in this) {

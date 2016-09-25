@@ -97,13 +97,14 @@ key: value".Replace("\r", "");
             n["array"][0] = "a";
             n["array"][1] = "b";
             n["array"][2] = "c";
+            n["array"].isArray = true; //TODO: Autodetect ("add" function?)
             n["key"] = "value";
 
             string data = @"---
 array:
-- a
-- b
-- c
+  - a
+  - b
+  - c
 key: value".Replace("\r", "");
 
             Assert.AreEqual(data, n.ToYAML());
@@ -116,20 +117,22 @@ key: value".Replace("\r", "");
             n["array1"][0] = "1a";
             n["array1"][1] = "1b";
             n["array1"][2] = "1c";
+            n["array1"].isArray = true;
             n["array2"][0] = "2a";
             n["array2"][1] = "2b";
             n["array2"][2] = "2c";
+            n["array2"].isArray = true;
             n["key"] = "value";
 
             string data = @"---
 array1:
-- 1a
-- 1b
-- 1c
+  - 1a
+  - 1b
+  - 1c
 array2:
-- 2a
-- 2b
-- 2c
+  - 2a
+  - 2b
+  - 2c
 key: value".Replace("\r", "");
 
             Assert.AreEqual(data, n.ToYAML());
