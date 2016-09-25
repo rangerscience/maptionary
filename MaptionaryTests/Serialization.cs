@@ -69,7 +69,7 @@ key: "" edging whitespace """.Replace("\r", "").Replace("\\n", "\n");
 
             n[1] = 1.23;
 
-            string data = "{1: 1.23}";
+            string data = "{\n  1: 1.23\n}";
 
             Assert.AreEqual(data, n.ToJSON());
         }
@@ -94,11 +94,11 @@ key: value";
 
             data = @"{
   'object':
-  {
-    'key1': 'value1',
-    'key2': 'value2',
-    'key3': 'value3'
-  },
+    {
+      'key1': 'value1',
+      'key2': 'value2',
+      'key3': 'value3'
+    },
   'key': 'value'
 }".Replace("'", "\"");
 

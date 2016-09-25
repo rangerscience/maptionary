@@ -212,7 +212,12 @@ namespace Maptionary
 
         //Being real lazy and ALSO using this to wrap the necessary quotes around the keys and values
         public static string EscapeJSON(string s) {
-            return "\"" + s + "\"";
+            double asNumber;
+            if (double.TryParse(s, out asNumber)) {
+                return s;
+            } else {
+                return "\"" + s + "\"";
+            }
         }
     }
 }
