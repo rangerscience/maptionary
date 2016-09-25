@@ -76,15 +76,15 @@ key: value".Replace("\r", "");
             n["object2"]["key3"] = "value6";
             n["key"] = "value";
 
-            string data = @"
+            string data = @"---
 object1:
   key1: value1
   key2: value2
   key3: value3
 object2:
-  key1: value3
-  key2: value4
-  key3: value5
+  key1: value4
+  key2: value5
+  key3: value6
 key: value".Replace("\r", "");
 
             Assert.AreEqual(data, n.ToYAML());
@@ -99,7 +99,7 @@ key: value".Replace("\r", "");
             n["array"][2] = "c";
             n["key"] = "value";
 
-            string data = @"
+            string data = @"---
 array:
 - a
 - b
@@ -121,7 +121,7 @@ key: value".Replace("\r", "");
             n["array2"][2] = "2c";
             n["key"] = "value";
 
-            string data = @"
+            string data = @"---
 array1:
 - 1a
 - 1b
@@ -154,7 +154,7 @@ key: value".Replace("\r", "");
             n["objects"][2]["object3"]["nestedObject"]["array"][1] = "1b";
             n["objects"][2]["object3"]["nestedObject"]["key"] = "value1";
 
-            string data = @"
+            string data = @"---
 objects:
 - object1:
     nestedObject:
@@ -177,7 +177,7 @@ objects:
     - 3b
     nestedObject:
       key: value3
-key: value";
+key: value".Replace("\r", "");
 
             Assert.AreEqual(data, n.ToYAML());
         }
