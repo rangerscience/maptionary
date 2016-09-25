@@ -142,45 +142,52 @@ key: value".Replace("\r", "");
         public void MixedObjectsAndArray() {
             Node n = new Node();
 
+            n["objects"].isArray = true;
+
             n["objects"][0]["object1"]["nestedObject"]["key"] = "value1";
-            n["objects"][0]["object1"]["nestedObject"]["array"][0] = "1a";
-            n["objects"][0]["object1"]["nestedObject"]["array"][1] = "1b";
-            n["objects"][0]["object1"]["key"] = "value";
+            n["objects"][0]["object1"]["array"][0] = "1a";
+            n["objects"][0]["object1"]["array"][1] = "1b";
+            n["objects"][0]["object1"]["array"].isArray = true;
+            n["objects"][0]["key"] = "value";
             
             n["objects"][1]["object2"]["nestedObject"]["key"] = "value2";
-            n["objects"][1]["object2"]["nestedObject"]["array"][0] = "2a";
-            n["objects"][1]["object2"]["nestedObject"]["array"][1] = "2b";
-            n["objects"][1]["object2"]["key"] = "value";
+            n["objects"][1]["object2"]["array"][0] = "2a";
+            n["objects"][1]["object2"]["array"][1] = "2b";
+            n["objects"][1]["object2"]["array"].isArray = true;
+            n["objects"][1]["key"] = "value";
 
-            n["objects"][2]["object3"]["key"] = "value";
-            n["objects"][2]["object3"]["nestedObject"]["array"][0] = "1a";
-            n["objects"][2]["object3"]["nestedObject"]["array"][1] = "1b";
-            n["objects"][2]["object3"]["nestedObject"]["key"] = "value1";
+            n["objects"][2]["key"] = "value";
+            n["objects"][2]["object3"]["array"][0] = "3a";
+            n["objects"][2]["object3"]["array"][1] = "3b";
+            n["objects"][2]["object3"]["array"].isArray = true;
+            n["objects"][2]["object3"]["nestedObject"]["key"] = "value3";
 
             string data = @"---
 objects:
-- object1:
-    nestedObject:
-      key: value1
-    array:
-    - 1a
-    - 1b
-  key: value
-- object2:
-    nestedObject:
-      key: value2
-    array:
-    - 2a
-    - 2b
-  key: value
-- key: value
-  object3:
-    array:
-    - 3a
-    - 3b
-    nestedObject:
-      key: value3
-key: value".Replace("\r", "");
+  -
+    object1:
+      nestedObject:
+        key: value1
+      array:
+        - 1a
+        - 1b
+    key: value
+  -
+    object2:
+      nestedObject:
+        key: value2
+      array:
+        - 2a
+        - 2b
+    key: value
+  -
+    key: value
+    object3:
+      array:
+        - 3a
+        - 3b
+      nestedObject:
+        key: value3".Replace("\r", "");
 
             Assert.AreEqual(data, n.ToYAML());
         }

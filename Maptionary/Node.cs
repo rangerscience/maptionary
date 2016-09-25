@@ -170,5 +170,3 @@ namespace Maptionary
         }
     }
 }
-
-
