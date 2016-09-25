@@ -177,6 +177,19 @@ namespace Maptionary
         string _ToJSON(string level) {
             if(leaf != null) {
                 return " " + EscapeJSON(leaf);
+            } else if (isArray) {
+                string s = "\n" + level + "[";
+                foreach (KeyValuePair<String, Node> entry in this) {
+                    s += "\n " + level + entry.Value._ToJSON(level + "    ") + ",";
+                }
+                if (s.Length > 1) {
+
+                    //Remove the trailing comma (aka, the last character), then close the object
+                    return s.Substring(0, s.Length - 1) + "\n" + level + "]";
+                } else {
+                    //Empty object
+                    return "[]";
+                }
             } else {
                 string s = "\n" + level + "{";
                 foreach (KeyValuePair<String, Node> entry in this) {

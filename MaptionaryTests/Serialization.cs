@@ -174,7 +174,7 @@ key: value".Replace("\r", "");
       'a',
       'b',
       'c'
-    ]
+    ],
   'key': 'value'
 }".Replace("'", "\"");
 
@@ -221,7 +221,7 @@ key: value";
       '2a',
       '2b',
       '2c'
-    ]
+    ],
   'key': 'value'
 }".Replace("'", "\"");
 
