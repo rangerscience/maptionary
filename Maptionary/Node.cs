@@ -135,5 +135,26 @@ namespace Maptionary
             }
             return 0;
         }
+
+        public string ToYAML() {
+            return "---\n" + _ToYAML();
+        }
+
+        string _ToYAML() {
+            if (leaf != null) {
+                return this.leaf;
+            } else {
+                string s = "";
+                foreach(KeyValuePair<String, Node> entry in this) {
+                    s += entry.Key + ": " + entry.Value._ToYAML();
+                }
+                return s;
+            }
+            return "";
+        }
+
+        public static string EscapeYAML(string s) {
+            return s;
+        }
     }
 }

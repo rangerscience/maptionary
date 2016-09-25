@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="JSONParserTests.cs" />
     <Compile Include="MixedFormatTests.cs" />
+    <Compile Include="Serialization.cs" />
     <Compile Include="XMLParserTests.cs" />
     <Compile Include="YAMLParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
