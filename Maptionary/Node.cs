@@ -180,7 +180,11 @@ namespace Maptionary
             } else if (isArray) {
                 string s = "\n" + level + "[";
                 foreach (KeyValuePair<String, Node> entry in this) {
-                    s += "\n " + level + entry.Value._ToJSON(level + "    ") + ",";
+                    if(entry.Value.leaf != null) { 
+                        s += "\n " + level + entry.Value._ToJSON(level + "  ") + ",";
+                    } else {
+                        s += entry.Value._ToJSON(level + "  ") + ",";
+                    }
                 }
                 if (s.Length > 1) {
 

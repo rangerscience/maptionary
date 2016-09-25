@@ -285,43 +285,51 @@ objects:
   'objects':
     [
       {
-        'object1': {
-          'nestedObject': {
-            'key': 'value1'
+        'object1':
+          {
+            'nestedObject':
+              {
+                'key': 'value1'
+              },
+            'array':
+              [
+                '1a',
+                '1b'
+              ]
           },
-          'array': [
-            '1a',
-            '1b'
-          ]
-        },
         'key': 'value'
       },
       {
-        'object2': {
-          'nestedObject': {
-            'key': 'value2'
+        'object2':
+          {
+            'nestedObject':
+              {
+                'key': 'value2'
+              },
+            'array':
+              [
+                '2a',
+                '2b'
+              ]
           },
-          'array': [
-            '2a',
-            '2b'
-          ]
-        },
         'key': 'value'
       },
       {
         'key': 'value',
-        'object3': {
-          'array': [
-            '3a',
-            '3b'
-          ],
-          'nestedObject': {
-            'key': 'value3'
+        'object3':
+          {
+            'array':
+              [
+                '3a',
+                '3b'
+              ],
+            'nestedObject':
+              {
+                'key': 'value3'
+              }
           }
-        }
       }
-  ],
-  'key': 'value'
+    ]
 }".Replace("\r", "").Replace("'", "\"");
 
             Assert.AreEqual(data, n.ToJSON());
