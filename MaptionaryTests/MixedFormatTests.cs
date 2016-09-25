@@ -271,9 +271,10 @@ data:
             string data = @"
 <data>
   ---
-  {
-    'key': 'value'
-  }
+  data:  
+    {
+      'key': 'value'
+    }
 </>
 ";
 

@@ -227,6 +227,12 @@ namespace Maptionary {
                             priorToken = whitespace;
                             n = levels[_indentLevel];
                             indentLevel = _indentLevel;
+
+                            //Since we can have YAML embedded in other formats, we can return up the stack to a level that's unpopulated -
+                            // but this actually means we're done parsing the YAML.
+                            if(n == null) {
+                                return;
+                            }
                         } else if (_indentLevel > indentLevel) {
                             // Entering an object
                             levels[_indentLevel] = n;
