@@ -137,7 +137,7 @@ namespace Maptionary
         }
 
         public string ToYAML() {
-            return "---\n" + _ToYAML();
+            return "---" + _ToYAML();
         }
 
         string _ToYAML() {
@@ -146,7 +146,7 @@ namespace Maptionary
             } else {
                 string s = "";
                 foreach(KeyValuePair<String, Node> entry in this) {
-                    s += entry.Key + ": " + entry.Value._ToYAML();
+                    s += "\n" + entry.Key + ": " + entry.Value._ToYAML();
                 }
                 return s;
             }
