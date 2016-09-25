@@ -92,12 +92,12 @@ key: value";
 
             Assert.AreEqual(data.Replace("\r", ""), n.ToYAML());
 
-            data = @"{ 
-  'object': 
+            data = @"{
+  'object':
   {
     'key1': 'value1',
     'key2': 'value2',
-    'key3': 'value3',
+    'key3': 'value3'
   },
   'key': 'value'
 }".Replace("'", "\"");

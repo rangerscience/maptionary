@@ -169,8 +169,33 @@ namespace Maptionary
             return s;
         }
 
+        //TODO: Test serialization of empty nodes!
         public string ToJSON() {
-            return "";
+            return _ToJSON("").TrimStart('\n'); //Remove the leading newline
+        }
+
+        string _ToJSON(string level) {
+            if(leaf != null) {
+                return " " + EscapeJSON(leaf);
+            } else {
+                string s = "\n" + level + "{";
+                foreach (KeyValuePair<String, Node> entry in this) {
+                    s += "\n  " + level + EscapeJSON(entry.Key) + ":" + entry.Value._ToJSON(level + "  ") + ",";
+                }
+                if (s.Length > 1) {
+
+                    //Remove the trailing comma (aka, the last character), then close the object
+                    return s.Substring(0, s.Length - 1) + "\n" + level + "}";
+                } else {
+                    //Empty object
+                    return "{}";
+                }
+            }
+        }
+
+        //Being real lazy and ALSO using this to wrap the necessary quotes around the keys and values
+        public static string EscapeJSON(string s) {
+            return "\"" + s + "\"";
         }
     }
 }
