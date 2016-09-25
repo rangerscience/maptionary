@@ -54,7 +54,7 @@ key: "" edging whitespace """.Replace("\r", "").Replace("\\n", "\n");
             n["object"]["key3"] = "value3";
             n["key"] = "value";
 
-            string data = @"
+            string data = @"---
 object:
   key1: value1
   key2: value2

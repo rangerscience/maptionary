@@ -137,16 +137,16 @@ namespace Maptionary
         }
 
         public string ToYAML() {
-            return "---" + _ToYAML();
+            return "---" + _ToYAML("");
         }
 
-        string _ToYAML() {
+        string _ToYAML(string level) {
             if (leaf != null) {
-                return EscapeYAML(this.leaf);
+                return " " + EscapeYAML(this.leaf);
             } else {
                 string s = "";
                 foreach(KeyValuePair<String, Node> entry in this) {
-                    s += "\n" + EscapeYAML(entry.Key) + ": " + entry.Value._ToYAML();
+                    s += "\n" + level + EscapeYAML(entry.Key) + ":" + entry.Value._ToYAML(level + "  ");
                 }
                 return s;
             }
@@ -164,3 +164,5 @@ namespace Maptionary
         }
     }
 }
+
+
