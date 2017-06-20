@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MaptionaryTests {
@@ -11,38 +12,49 @@ namespace MaptionaryTests {
         const int PORT_NO = 5000;
         const string SERVER_IP = "127.0.0.1";
 
-        public void Run(string[] args) {
+        public string response = "";
 
-            //---listen at the specified IP and port no.---
-            IPAddress localAdd = IPAddress.Parse(SERVER_IP);
-            TcpListener listener = new TcpListener(localAdd, PORT_NO);
-            Console.WriteLine("Listening...");
-            listener.Start();
+        private readonly HttpListener _listener = new HttpListener();
 
-            //---incoming client connected---
-            TcpClient client = listener.AcceptTcpClient();
+        public TestServer(string host) {
+            if (!HttpListener.IsSupported) {
+                throw new NotSupportedException("Needs Windows XP SP2, Server 2003 or later.");
+            }
 
-            //---get the incoming data through a network stream---
-            NetworkStream nwStream = client.GetStream();
-            byte[] buffer = new byte[client.ReceiveBufferSize];
-
-            //---read incoming stream---
-            int bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
-
-            //---convert the data received into a string---
-            string dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-            Console.WriteLine("Received : " + dataReceived);
-
-            //---write back the text to the client---
-            Console.WriteLine("Sending back : " + dataReceived);
-            nwStream.Write(buffer, 0, bytesRead);
-            client.Close();
-            listener.Stop();
-            Console.ReadLine();
+            _listener.Prefixes.Add(host);
+            _listener.Start();
         }
 
-        public bool update(string path, string val) {
-            return false;
+        public void Run() {
+            ThreadPool.QueueUserWorkItem((o) => {
+                Console.WriteLine("Webserver running...");
+                try {
+                    while(_listener.IsListening) {
+                        ThreadPool.QueueUserWorkItem((c) => {
+                            var ctx = c as HttpListenerContext;
+                            try {
+                                byte[] buf = Encoding.UTF8.GetBytes(response);
+                                ctx.Response.ContentLength64 = buf.Length;
+                                ctx.Response.OutputStream.Write(buf, 0, buf.Length);
+                            }
+                            catch {
+                                // Suppress any exceptions
+                            }
+                            finally {
+                                ctx.Response.OutputStream.Close();
+                            }
+                        }, _listener.GetContext());
+                    }
+                }
+                catch {
+                    //Supress
+                }
+            });
+        }
+
+        public void Stop() {
+            _listener.Stop();
+            _listener.Close();
         }
     }
 }

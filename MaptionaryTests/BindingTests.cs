@@ -2,14 +2,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Maptionary;
 using System.IO;
+using System.Threading;
+using System.Net;
 
 namespace MaptionaryTests {
     [TestClass]
     public class BindingTests {
         [TestMethod()]
         public void BindNodeToFile() {
-            Node n = new Node();
-
             string filePath = "binding_test1.yml";
             System.IO.File.WriteAllText(filePath, "key: value");
 
@@ -25,25 +25,28 @@ namespace MaptionaryTests {
             
             Assert.IsTrue(b.data["key"] == "updated", "Bound node did not update from file:\n" + b.data.ToYAML());
         }
-
-        /*
+        
         [TestMethod()]
         public void BindNodeToHTTP() {
-            Node n = new Node();
-            TestServer s = new TestServer();
-            // TODO: s.Run();
-            
-            Assert.IsTrue(n.Bind("http://127.0.0.1:5000/binding_test1.yml"), "Could not bind node to HTTP");
+            string host = "http://localhost:8080/";
+            TestServer s = new TestServer(host);
+            s.response = "key: value";
+            s.Run();
 
-            Assert.IsTrue(n["key"] == "value", "Bound node did not read from HTTP");
+            Bind b = new Bind(host);
 
-            Assert.IsTrue(s.update("binding_test1.yml", "key: updated"));
+            Assert.IsTrue(b.data["key"] == "value", "Bound node did not read from HTTP");
 
-            //TODO: Wait until update...?
+            s.response = "key: updated";
 
-            Assert.IsTrue(n["key"] == "value2", "Bound node did not update from HTTP");
+            Thread.Sleep(6000); // Bind is on a 5 sec refresh
+
+            Assert.IsTrue(b.data["key"] == "updated", "Bound node did not update from HTTP");
+
+            s.Stop();
         }
 
+        /*
         [TestMethod()]
         public void BindNodeToWS() {
             Node n = new Node();
@@ -84,6 +87,12 @@ namespace MaptionaryTests {
 
             Assert.IsTrue(output == "value2", "Bound function did not run on node update");
         }
+        */
+
+        /*
+        TODO: Bind to sub-nodes...?
+
+
         */
     }
 }
