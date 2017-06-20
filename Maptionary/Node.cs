@@ -220,13 +220,6 @@ namespace Maptionary
             }
         }
 
-        public bool Bind(string source) {
-            return false;
-        }
 
-        public delegate void Del(Node n);
-        public bool Bind(Del func) {
-            return false;
-        }
     }
 }

@@ -117,6 +117,11 @@ namespace MaptionaryTests {
             Assert.IsFalse(n["NaN"] == 1, "NaN shouldn't equal 1");
             Assert.IsFalse(n["NaN"] == 1d, "NaN shouldn't equal 1d");
             Assert.IsFalse(n["NaN"] == 1f, "NaN shouldn't equal 1f");
+
+            Assert.IsTrue(n["nonexistent key"] != 1, "Nonexistent key shouldn't equal 1");
+
+            //Check if this throws an error by doing it:
+            n["check"] = n["NaN"] + 1;
         }
 
         [TestMethod()]
@@ -132,6 +137,29 @@ namespace MaptionaryTests {
             Assert.AreEqual((string)n[1.23], "1.23", "Simple double key not equal to simple double string");
             Assert.AreEqual((string)n[1.23f], "1.23", "Float key not equal to simple double string");
             Assert.AreEqual((string)n[1.23d], "1.23", "Double key not equal to simple double string");
+        }
+
+        [TestMethod()]
+        public void Parenting() {
+            Node n = new Node();
+            n[0][0] = 1;
+
+            Assert.AreEqual(n[0][0].parent, n[0]);
+            Assert.AreEqual(n[0].parent, n);
+        }
+
+        [TestMethod()]
+        public void ValueOverwriting() {
+            Node n = new Node();
+
+            n["key"] = "value";
+            n["key"] = new Node();
+
+            Assert.IsNull(n["key"].leaf);
+
+            n["key"] = "value";
+
+            Assert.AreEqual(n["key"].Count, 0);
         }
     }
 }
